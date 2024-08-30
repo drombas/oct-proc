@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Functions &#8212; RETIMAT 1.0.0</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=def86cc0" />
+    
+    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Tutorials" href="tutorials.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="tutorials.html" title="Tutorials"
+             accesskey="P">previous</a></li>
+        <li class="nav-item nav-item-0"><a href="index.html">RETIMAT 1.0.0</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Functions</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="functions">
+<h1>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h1>
+<p>These are all the functions implemented in RETIMAT</p>
+<section id="file-reading">
+<h2>File reading<a class="headerlink" href="#file-reading" title="Link to this heading">¶</a></h2>
+<dl class="mat function">
+<dt class="sig sig-object mat" id="io.read_vol">
+<span class="sig-name descname"><span class="pre">read_vol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">file</span></em>, <em class="sig-param"><span class="pre">varargin</span></em><span class="sig-paren">)</span><a class="headerlink" href="#io.read_vol" title="Link to this definition">¶</a></dt>
+<dd><p>Read metadata, segmentation, OCT, and slo images contained in a from Spectralis OCT (Heidelberg Engineering)</p>
+<section id="input-arguments">
+<h3>Input arguments<a class="headerlink" href="#input-arguments" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>file</strong>:           String containing the path to the .vol file to be read.</p></li>
+<li><p><strong>varargin</strong>:       Optional parameters from the list:</p>
+<ul>
+<li><p>‘visu’: Visualize the scanning patter along with B-Scans and fundus image (slo).</p></li>
+<li><p>‘full_header’: Retrieve the original header with all the parameters (by default only a few important parameters are retrieved).</p></li>
+<li><p>‘get_coordinates’: retrieve fundus and A-Scan X, Y coordinates</p></li>
+<li><p>‘raw_pixel’: return raw pixel reflectance instead of visualization-adapted values.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="output-arguments">
+<h3>Output arguments<a class="headerlink" href="#output-arguments" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>header</strong>:        Structure with .vol file header values.</p></li>
+<li><p><strong>segment</strong>:       Segmenation data stored in the .vol file.</p></li>
+<li><p><strong>bscan</strong>:         3D single image with B-Scans.</p></li>
+<li><p><strong>fundus</strong>:        2D fundus image.</p></li>
+</ul>
+</section>
+<section id="notes">
+<h3>Notes<a class="headerlink" href="#notes" title="Link to this heading">¶</a></h3>
+<p>Spectralis OCT data can be exported into both E2E and vol format. We
+recommend using the latter as it provides easier access to the header
+information.</p>
+<p>Originally writen by Radim Kolar, Brno University, Czech Republic
+Modified by Markus Mayer, Pattern Recognition Lab, University of
+Erlangen-Nuremberg</p>
+<p>Modified by Kris Sheets, Retinal Cell Biology Lab,
+Neuroscience Center of Excellence, LSU Health Sciences Center, 
+New Orleans</p>
+<p>Modified by Andrew Lang, Image Analysis and Communications Lab, Johns
+Hopkins University - Modifications to increase efficiency - 5/17/2012</p>
+<p>Current version modified by David Romero-Bascones, Biomedical Engineering
+Department, Mondragon Unibertsitatea, 2023, <a class="reference external" href="mailto:dromero&#37;&#52;&#48;mondragon&#46;edu">dromero<span>&#64;</span>mondragon<span>&#46;</span>edu</a></p>
+</section>
+<section id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h3>
+<section id="read-all-the-information-in-a-vol-file">
+<h4>Read all the information in a .vol file<a class="headerlink" href="#read-all-the-information-in-a-vol-file" title="Link to this heading">¶</a></h4>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">header</span><span class="p">,</span><span class="w"> </span><span class="n">segment</span><span class="p">,</span><span class="w"> </span><span class="n">bscan</span><span class="p">,</span><span class="w"> </span><span class="n">fundus</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">read_vol</span><span class="p">(</span><span class="s">&#39;my_oct.vol&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="read-only-the-header-of-the-vol-file-faster">
+<h4>Read only the header of the .vol file (faster)<a class="headerlink" href="#read-only-the-header-of-the-vol-file-faster" title="Link to this heading">¶</a></h4>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">header</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">read_vol</span><span class="p">(</span><span class="s">&#39;my_oct.vol&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="mat function">
+<dt class="sig sig-object mat" id="io.read_e2e">
+<span class="sig-name descname"><span class="pre">read_e2e</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">file</span></em>, <em class="sig-param"><span class="pre">varargin</span></em><span class="sig-paren">)</span><a class="headerlink" href="#io.read_e2e" title="Link to this definition">¶</a></dt>
+<dd><p>Read metadata, segmentation, OCT and fundus images in .e2e/.E2E files from Spectralis OCT (Heidelberg Engineering)</p>
+<section id="id1">
+<h3>Input arguments<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>file</strong>:           String containing the path to the .vol file to be read.</p></li>
+<li><p><strong>varargin</strong>:       Optional parameters from the list:</p>
+<ul>
+<li><p>‘verbose’: Display header info during read.</p></li>
+<li><p>‘raw_pixel’: Display raw pixel intensities.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id2">
+<h3>Output arguments<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>header</strong>:         Structure with .vol file header values.</p></li>
+<li><p><strong>segment</strong>:        Segmenation data stored in the .vol file.</p></li>
+<li><p><strong>bscan</strong>:          3D single image with B-Scans.</p></li>
+<li><p><strong>fundus</strong>:         2D fundus image.</p></li>
+</ul>
+</section>
+<section id="id3">
+<h3>Notes<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
+<p>This function was developed based on the previous reverse engineering 
+attempts [1-3] and is not an official file reader. Therefore, some of 
+the information retrieved can be incorrect/incomplete.</p>
+<p>Scan focus, scale_x, scale_y and acquisition pattern are yet to be found.</p>
+<p>Spectralis OCT data can be exported into both E2E and vol format. We
+recommend using the latter as it is easier to parse and it only stores
+a single eye and acquisition.</p>
+</section>
+<section id="references">
+<h3>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h3>
+<p>[1] uocte documentation
+<a class="reference external" href="https://bitbucket.org/uocte/uocte/wiki/Topcon%20File%20Format">https://bitbucket.org/uocte/uocte/wiki/Topcon%20File%20Format</a></p>
+<p>[2] OCT-Converter, <a class="reference external" href="https://github.com/marksgraham/OCT-Converter">https://github.com/marksgraham/OCT-Converter</a></p>
+<p>[3] LibE2E, <a class="reference external" href="https://github.com/neurodial/LibE2E">https://github.com/neurodial/LibE2E</a></p>
+</section>
+<section id="id4">
+<h3>Examples<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
+<section id="read-all-the-information-in-a-e2e-e2e-file">
+<h4>Read all the information in a .e2e/.E2E file<a class="headerlink" href="#read-all-the-information-in-a-e2e-e2e-file" title="Link to this heading">¶</a></h4>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">file</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&#39;my_oct.e2e&#39;</span><span class="p">;</span>
+<span class="p">[</span><span class="n">header</span><span class="p">,</span><span class="w"> </span><span class="n">segment</span><span class="p">,</span><span class="w"> </span><span class="n">bscan</span><span class="p">,</span><span class="w"> </span><span class="n">fundus</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">read_e2e</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="read-only-the-header-of-the-e2e-e2e-file-faster">
+<h4>Read only the header of the .e2e/.E2E file (faster)<a class="headerlink" href="#read-only-the-header-of-the-e2e-e2e-file-faster" title="Link to this heading">¶</a></h4>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">file</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&#39;my_oct.e2e&#39;</span><span class="p">;</span>
+<span class="w"> </span><span class="n">header</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">read_e2e</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="mat function">
+<dt class="sig sig-object mat" id="io.read_img">
+<span class="sig-name descname"><span class="pre">read_img</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">file</span></em>, <em class="sig-param"><span class="pre">scan_size</span></em>, <em class="sig-param"><span class="pre">varargin</span></em><span class="sig-paren">)</span><a class="headerlink" href="#io.read_img" title="Link to this definition">¶</a></dt>
+<dd><p>Read OCT images from Cirrus .img files</p>
+<section id="id5">
+<h3>Input arguments<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>file</strong>:        String with the path to the img file name to be read.</p></li>
+<li><dl class="simple">
+<dt><strong>scan_size</strong>:   Array of 3 numeric values defining the size of the </dt><dd><p>scanned region. Sizes must be given following [x y z]
+convention. By default a cube of [6 6 2] mm is 
+considered.</p>
+</dd>
+</dl>
+</li>
+<li><p><strong>varargin</strong>:    optional string flags from the list:</p>
+<ul>
+<li><p>‘get_coordinates’: retrieve fundus and A-Scan X, Y coordinates. If the scan pattern is unknown coordinates cannot be computed.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id6">
+<h3>Output arguments<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>header</strong>: struct with metadata retrieved from filename and volume dimensions.</p></li>
+<li><p><strong>bscan</strong>: 3D matrix of size [n_axial x n_ascan x n_bscan] with image data.</p></li>
+</ul>
+</section>
+<section id="id7">
+<h3>Notes<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
+<p>img files do not include any spatial or metadata information. Therefore,
+to correctly reconstruct the image volume this function relies on two
+strategies:</p>
+<ol class="arabic simple">
+<li><p>Inspection of the filename.</p></li>
+<li><p>Matching of the voxel count with this known acquisition patterns:</p></li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><p>Macular Cube: [200 x 200 x 1024] : 40960000</p></li>
+<li><p>Opitic Disc Cube: [512 x 128 x 1024] : 67108864</p></li>
+<li><p>5 Line Raster: [1024 x 5 x 1024]</p></li>
+<li><p>Hidef: [512 x 2 x 1024] (not supported yet)</p></li>
+</ul>
+</div></blockquote>
+<p>Scans differing from the previous protocols might not be read properly.</p>
+<p>Info from previous function:
+hidef scan consists of 2 orthogonal bscans intersecting in the center of
+the volume. The first is in the y direction (across B-scans), the second
+is in the x direction (aligned with the center B-scan). Unfortunately,
+they are not in good alignment with the volumetric data.</p>
+</section>
+<section id="example">
+<h3>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h3>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">header</span><span class="p">,</span><span class="w"> </span><span class="n">bscan</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">read_img</span><span class="p">(</span><span class="s">&#39;myfile.img&#39;</span><span class="p">)</span><span class="w">    </span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="mat function">
+<dt class="sig sig-object mat" id="io.read_bin">
+<span class="sig-name descname"><span class="pre">read_bin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">file</span></em>, <em class="sig-param"><span class="pre">im_size</span></em><span class="sig-paren">)</span><a class="headerlink" href="#io.read_bin" title="Link to this definition">¶</a></dt>
+<dd><p>Read grayscale slo (fundus) images from Cirrus .bin files</p>
+<section id="id8">
+<h3>Input arguments<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>file</strong>: path of the .bin file to read.</p></li>
+<li><p><strong>im_size</strong>: size of the slo image. If not provided it is assumed to be [664 512];</p></li>
+</ul>
+</section>
+<section id="id9">
+<h3>Output arguments<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>fundus</strong>: fundus grayscale image.</p></li>
+</ul>
+</section>
+<section id="id10">
+<h3>Notes<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h3>
+<p>This code was developed by reverse engineering a few .bin files and may
+not work for every .bin image.</p>
+</section>
+<section id="id11">
+<h3>Example<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h3>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">I</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">read_bin</span><span class="p">(</span><span class="s">&#39;myfile.bin&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="mat function">
+<dt class="sig sig-object mat" id="io.read_fda">
+<span class="sig-name descname"><span class="pre">read_fda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">file</span></em>, <em class="sig-param"><span class="pre">varargin</span></em><span class="sig-paren">)</span><a class="headerlink" href="#io.read_fda" title="Link to this definition">¶</a></dt>
+<dd><p>Reads the header, segmentation and images (OCT + fundus) contained in  
+an .fda Topcon file.</p>
+<section id="id12">
+<h3>Input arguments<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>file</strong>:        Path of the .fda file to read.</p></li>
+<li><p><strong>varargin</strong>:    Optional flags from the list:</p>
+<ul>
+<li><p>‘verbose’: If provided, reading info is displayed.</p></li>
+<li><p>‘get_coordinates’: If provided A-scan coordinates are returned.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id13">
+<h3>Output arguments<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>header</strong>         Structure with .fda file header values.</p></li>
+<li><p><strong>segment</strong>        Segmenation data stored in the .fda file.</p></li>
+<li><p><strong>bscan</strong>          3D single image with B-Scans.</p></li>
+<li><p><strong>fundus</strong>         2D fundus image.</p></li>
+</ul>
+</section>
+<section id="id14">
+<h3>Notes<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h3>
+<p>This code is heavily based on [1,2], which were developed by reverse 
+engineering fda files. Therefore, data read using this function may be
+incomplete/incorrect.</p>
+<p>The reading process is as follows:</p>
+<ol class="arabic simple">
+<li><p>Identify data chunks present in file (not all are always present)</p></li>
+<li><p>Read specific chunks with the relevant information</p></li>
+</ol>
+<p>‘get_coordinates’ flag only works if the scanning pattern is horizontal
+raster (pending to implement others).</p>
+</section>
+<section id="id15">
+<h3>References<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h3>
+<p>[1] uocte documentation
+<a class="reference external" href="https://bitbucket.org/uocte/uocte/wiki/Topcon%20File%20Format">https://bitbucket.org/uocte/uocte/wiki/Topcon%20File%20Format</a></p>
+<p>[2] OCT-Converter: <a class="reference external" href="https://github.com/marksgraham/OCT-Converter">https://github.com/marksgraham/OCT-Converter</a></p>
+</section>
+<section id="id16">
+<h3>Example<a class="headerlink" href="#id16" title="Link to this heading">¶</a></h3>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">header</span><span class="p">,</span><span class="w"> </span><span class="n">segment</span><span class="p">,</span><span class="w"> </span><span class="n">bscan</span><span class="p">,</span><span class="w"> </span><span class="n">fundus</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">read_fda</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="mat function">
+<dt class="sig sig-object mat" id="io.read_xml_iowa">
+<span class="sig-name descname"><span class="pre">read_xml_iowa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">file</span></em>, <em class="sig-param"><span class="pre">varargin</span></em><span class="sig-paren">)</span><a class="headerlink" href="#io.read_xml_iowa" title="Link to this definition">¶</a></dt>
+<dd><p>Read segmentation computed by OCTExplorer (IOWA reference algorithm)</p>
+<section id="id17">
+<h3>Input arguments<a class="headerlink" href="#id17" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>file</strong>:    path to xml output file ending with Surfaces_Iowa.xml</p></li>
+<li><p><strong>varargin</strong>: different string flags:</p>
+<ul>
+<li><p>‘get_coordinates’: to return A-Scan coordinates as part of the header.</p></li>
+<li><p>‘keep_names’: to use layer naming convention from OCTExplorer instead of RETIMAT.</p></li>
+<li><p>‘keep_nan’: to keep regions with noisy segmentation as numerical values instead of nan.</p></li>
+<li><p>‘verbose’: to plot additional info on read layers.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id18">
+<h3>Output arguments<a class="headerlink" href="#id18" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>header</strong>: struct with metadata related with the segmentation: version, resolution, dimensions.</p></li>
+<li><p><strong>seg</strong>: struct with point segmentation values (in pixels).</p></li>
+</ul>
+</section>
+<section id="id19">
+<h3>Notes<a class="headerlink" href="#id19" title="Link to this heading">¶</a></h3>
+<p>This function has been only tested for raster acquisitions and
+OCTExplorer version version 3.8.0.</p>
+<p>The axes convention used in OCTExplorer differs from the one used here:</p>
+<ul class="simple">
+<li><p>x: horizontal (temporal - nasal)</p></li>
+<li><p>y: vertical (inferior - superior)</p></li>
+<li><p>z: axial (depth)</p></li>
+</ul>
+<p>Layer naming convention returned by this function differs from the one
+used by OCTExplorer.</p>
+<p>OCTExplorer uses different ways to determine an invalid region:</p>
+<ul class="simple">
+<li><p>Segmentation = 0</p></li>
+<li><p>Segmentation NA (not sure)</p></li>
+<li><p>Undefined region chunk (full square regions I believe)</p></li>
+</ul>
+</section>
+<section id="id20">
+<h3>References<a class="headerlink" href="#id20" title="Link to this heading">¶</a></h3>
+<p>[1] The Iowa Reference Algorithms (Retinal Image Analysis Lab, Iowa 
+Institute for Biomedical Imaging, Iowa City, IA), 
+<a class="reference external" href="https://www.iibi.uiowa.edu/oct-reference">https://www.iibi.uiowa.edu/oct-reference</a></p>
+<p>[2] Abramoff MD et al., Retinal Imaging and Image Analysis. IEEE 
+Reviews in Biomedical Engineering, 2010. doi:10.1109/RBME.2010.2084567</p>
+<p>[3] Kang L et al., Optimal Surface Segmentation in Volumetric Images – 
+A Graph-Theoretic Approach. IEEE Transactions on Pattern Analysis and 
+Machine Intelligence, 2006. doi:10.1109/TPAMI.2006.19</p>
+<p>[4] Garvin MK et al., Automated 3-D Intraretinal Layer Segmentation of
+Macular Spectral-Domain Optical Coherence Tomography Images. IEEE Trans 
+Med. Imaging, 2009. doi:10.1109/TMI.2009.2016958</p>
+</section>
+<section id="id21">
+<h3>Example<a class="headerlink" href="#id21" title="Link to this heading">¶</a></h3>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">header</span><span class="p">,</span><span class="w"> </span><span class="n">seg</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">read_xml_iowa</span><span class="p">(</span><span class="s">&#39;my_file_Surfaces_Iowa.xml&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+</section>
+<hr class="docutils" />
+<section id="visualization">
+<h2>Visualization<a class="headerlink" href="#visualization" title="Link to this heading">¶</a></h2>
+<dl class="mat function">
+<dt class="sig sig-object mat" id="visu.generate_report">
+<span class="sig-name descname"><span class="pre">generate_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">bscan</span></em>, <em class="sig-param"><span class="pre">seg</span></em>, <em class="sig-param"><span class="pre">fundus</span></em>, <em class="sig-param"><span class="pre">layers</span></em>, <em class="sig-param"><span class="pre">varargin</span></em><span class="sig-paren">)</span><a class="headerlink" href="#visu.generate_report" title="Link to this definition">¶</a></dt>
+<dd><p>Create a summary figure with fundus, en-face reflectance map, thickness
+maps and bscans.</p>
+<section id="input-arguments-mandatory">
+<h3>Input arguments (mandatory)<a class="headerlink" href="#input-arguments-mandatory" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>bscan</strong>:       Raw b-scans with shape [n_axial, n_ascan, n_bscan]</p></li>
+<li><p><strong>seg</strong>:         Struct with segmentation data. Each field corresponds to a different boundary. Expected shape of each field [n_bscan, n_ascan]</p></li>
+<li><p><strong>fundus</strong>:      Fundus image.</p></li>
+<li><p><strong>layers</strong>:      List of layers for which to plot thickness maps.</p></li>
+</ul>
+</section>
+<section id="input-arguments-optional">
+<h3>Input arguments (optional)<a class="headerlink" href="#input-arguments-optional" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>n_plot_bscan</strong>: How many bscans to plot. Default: maximum between 5 and n_bscan.</p></li>
+<li><p><strong>n_col_max</strong>:    Maximum number of columns in the figure. Default: 5</p></li>
+<li><p><strong>file_name</strong>:    File name to save the plot. Default: [] (plot is not saved).</p></li>
+<li><p><strong>visible</strong>:      ‘on’ to show the figure window and ‘off’ to hide it. Default: ‘on’</p></li>
+<li><p><strong>title</strong>:        text to us as title. Default: [] (no title).</p></li>
+</ul>
+</section>
+<section id="id22">
+<h3>Output arguments<a class="headerlink" href="#id22" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>fig</strong>:           Created figure handle.</p></li>
+</ul>
+</section>
+<section id="id23">
+<h3>Notes<a class="headerlink" href="#id23" title="Link to this heading">¶</a></h3>
+<p>This reports are useful to identify segmentation errors or poor signal
+quality.</p>
+</section>
+<section id="id24">
+<h3>Example<a class="headerlink" href="#id24" title="Link to this heading">¶</a></h3>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="o">~</span><span class="p">,</span><span class="w"> </span><span class="n">segment</span><span class="p">,</span><span class="w"> </span><span class="n">bscan</span><span class="p">,</span><span class="w"> </span><span class="n">fundus</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">read_vol</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+<span class="n">generate_report</span><span class="p">(</span><span class="n">bscan</span><span class="p">,</span><span class="w"> </span><span class="n">segment</span><span class="p">,</span><span class="w"> </span><span class="n">fundus</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="s">&#39;TRT&#39;</span><span class="p">,</span><span class="s">&#39;RNFL&#39;</span><span class="p">})</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="mat function">
+<dt class="sig sig-object mat" id="visu.plot_sectors">
+<span class="sig-name descname"><span class="pre">plot_sectors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">Z</span></em>, <em class="sig-param"><span class="pre">Sectors</span></em>, <em class="sig-param"><span class="pre">varargin</span></em><span class="sig-paren">)</span><a class="headerlink" href="#visu.plot_sectors" title="Link to this definition">¶</a></dt>
+<dd><p>Visualize sectorization results</p>
+<section id="id25">
+<h3>Input arguments (mandatory)<a class="headerlink" href="#id25" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Z</strong>:              Values of each sector.</p></li>
+<li><p><strong>Sectors</strong>:        Struct defining the sectorization. Either manually defined or obtained after using sectorize_map().</p></li>
+</ul>
+</section>
+<section id="input-arguments-name-value-pair">
+<h3>Input arguments (name/value pair)<a class="headerlink" href="#input-arguments-name-value-pair" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>n_point</strong>:     Number of points in each non-straight line segment. Higher number increases resolution and computation time. Default: 50.</p></li>
+<li><p><strong>alpha</strong>:       Transparency of patches. Range: [0,1]. Default: 1.</p></li>
+<li><p><strong>edge_color</strong>:  Color of the edges of each patch. Default: ‘k’ (black).</p></li>
+<li><p><strong>axis_off</strong>:    Set it to true to hide axis. Default: true.</p></li>
+<li><p><strong>axis_equal</strong>:  Set it to true to set a aspect ratio of 1. Default: true.</p></li>
+</ul>
+</section>
+<section id="id26">
+<h3>Notes<a class="headerlink" href="#id26" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt>ETDRS sectorization is defined as a structure with fields:</dt><dd><ul class="simple">
+<li><p>type: ‘wedge’</p></li>
+<li><p>radius: [0.5 1.5 3]</p></li>
+<li><p>n_angle = 4</p></li>
+<li><p>theta_0 = -pi/4</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="id27">
+<h3>Example<a class="headerlink" href="#id27" title="Link to this heading">¶</a></h3>
+<section id="plot-etdrs-sectorization">
+<h4>Plot ETDRS sectorization<a class="headerlink" href="#plot-etdrs-sectorization" title="Link to this heading">¶</a></h4>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">header</span><span class="p">,</span><span class="w"> </span><span class="n">seg</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">read_vol</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;verbose&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;get_coordinates&#39;</span><span class="p">);</span>
+<span class="n">Thickness</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">compute_thickness</span><span class="p">(</span><span class="n">seg</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;TRT&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="p">.</span><span class="n">scale_z</span><span class="p">);</span>
+<span class="p">[</span><span class="n">TRT</span><span class="p">,</span><span class="w"> </span><span class="n">Sectors</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">sectorize_map</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="w"> </span><span class="n">Y</span><span class="p">,</span><span class="w"> </span><span class="n">TRT</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;mean&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;etdrs&#39;</span><span class="p">);</span>
+<span class="n">plot_sectors</span><span class="p">(</span><span class="n">TRT</span><span class="p">,</span><span class="w"> </span><span class="n">Sectors</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="mat function">
+<dt class="sig sig-object mat" id="visu.spider_plot">
+<span class="sig-name descname"><span class="pre">spider_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">Data</span></em>, <em class="sig-param"><span class="pre">varargin</span></em><span class="sig-paren">)</span><a class="headerlink" href="#visu.spider_plot" title="Link to this definition">¶</a></dt>
+<dd><p>Visualize sectorization results</p>
+<section id="id28">
+<h3>Input arguments (mandatory)<a class="headerlink" href="#id28" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Data</strong>:          matrix with N (observations)x M (angles)</p></li>
+</ul>
+</section>
+<section id="id29">
+<h3>Input arguments (name/value pair)<a class="headerlink" href="#id29" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>param</strong>:     structure with parameters for plotting configuration.</p>
+<ul>
+<li><p>center: ‘mean’ or ‘median’</p></li>
+<li><p>superior: interval superior value % percentile (e.g. 75)</p></li>
+<li><p>inferior: interval inferior value % percentile (e.g. 25)</p></li>
+<li><p>circleRadius: radius of the radar outer circle. Change to hide outliers</p></li>
+<li><p>plotDots: flag to overlay raw data points or not</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id30">
+<h3>Notes<a class="headerlink" href="#id30" title="Link to this heading">¶</a></h3>
+<p>This is a legacy function that should be updated at some point.</p>
+</section>
+</dd></dl>
+
+</section>
+<hr class="docutils" />
+<section id="reflectance">
+<h2>Reflectance<a class="headerlink" href="#reflectance" title="Link to this heading">¶</a></h2>
+<dl class="mat function">
+<dt class="sig sig-object mat" id="reflectance.compute_attenuation">
+<span class="sig-name descname"><span class="pre">compute_attenuation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">bscan</span></em>, <em class="sig-param"><span class="pre">scale_z</span></em>, <em class="sig-param"><span class="pre">method</span></em>, <em class="sig-param"><span class="pre">seg</span></em><span class="sig-paren">)</span><a class="headerlink" href="#reflectance.compute_attenuation" title="Link to this definition">¶</a></dt>
+<dd><p>Compute voxelwise attenuation coefficient based on [1] or [3].</p>
+<section id="id31">
+<h3>Input arguments<a class="headerlink" href="#id31" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>bscan</strong>:       matrix with B-scans of dimensions n_axial x n_ascan x n_bscan. If 2D matrix it will be interpreted as a single B-scan.</p></li>
+<li><p><strong>scale_z</strong>:     axial (depth) resolution in mm.</p></li>
+<li><p><strong>method</strong>:      method used to compute the attenuation coefficient.</p>
+<ul>
+<li><p>‘vermeer_2014’ (default)</p></li>
+<li><p>‘vanderschoot_2012’</p></li>
+</ul>
+</li>
+<li><p><strong>seg</strong>:         struct with segmentation data used with the ‘vanderschoot_2012’ method [3]</p></li>
+</ul>
+</section>
+<section id="id32">
+<h3>Output arguments<a class="headerlink" href="#id32" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>att</strong>:         attenuation coefficient per voxel.</p></li>
+</ul>
+</section>
+<section id="id33">
+<h3>Notes<a class="headerlink" href="#id33" title="Link to this heading">¶</a></h3>
+<p>The precise measurement of tissue attenuation coefficient is difficult and
+and still a research topic. This function provides an approximate value
+based on assumptions on optical tissue properties [1]. You may want to
+read [2] to check how this method compares to others.</p>
+<p>The method in [3] is currently only supported for RNFL and returns a
+total attenuation value for each a-scan instead of a 3D matrix.</p>
+<p>For the methods to work it is important to use raw voxel intensity. For
+instance reading .vol files with the ‘raw_pixel’ flag.</p>
+</section>
+<section id="id34">
+<h3>References<a class="headerlink" href="#id34" title="Link to this heading">¶</a></h3>
+<p>[1] Vermeer, Depth-resolved model-based reconstruction of attenuation 
+coefficients in optical coherence tomography, Biomedical Optics Express
+2014, <a class="reference external" href="https://doi.org/10.1364/BOE.5.000322">https://doi.org/10.1364/BOE.5.000322</a></p>
+<p>[2] Chang, Review of methods and applications of attenuation 
+coefficient measurements with optical coherence tomography, Journal of
+Biomedical Optics, 2019, <a class="reference external" href="https://doi.org/10.1117/1.JBO.24.9.090901">https://doi.org/10.1117/1.JBO.24.9.090901</a></p>
+<p>[3] van der Schoot, The Effect of Glaucoma on the Optical Attenuation
+Coefficient of the Retinal Nerve Fiber Layer in Spectral Domain Optical
+Coherence Tomography Images, IOVS, 2012, 
+<a class="reference external" href="https://doi.org/10.1167/iovs.11-8436">https://doi.org/10.1167/iovs.11-8436</a></p>
+</section>
+<section id="id35">
+<h3>Example<a class="headerlink" href="#id35" title="Link to this heading">¶</a></h3>
+<section id="load-a-vol-file-and-compute-the-attenuation-coefficient">
+<h4>Load a .vol file and compute the attenuation coefficient<a class="headerlink" href="#load-a-vol-file-and-compute-the-attenuation-coefficient" title="Link to this heading">¶</a></h4>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">header</span><span class="p">,</span><span class="o">~</span><span class="p">,</span><span class="n">bscan</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">read_vol</span><span class="p">(</span><span class="s">&#39;my_file.vol&#39;</span><span class="p">,</span><span class="s">&#39;raw_pixel&#39;</span><span class="p">);</span>
+<span class="n">att</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">compute_attenuation</span><span class="p">(</span><span class="n">bscan</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="p">.</span><span class="n">scale_z</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="mat function">
+<dt class="sig sig-object mat" id="reflectance.image_quality">
+<span class="sig-name descname"><span class="pre">image_quality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">I</span></em>, <em class="sig-param"><span class="pre">metric</span></em>, <em class="sig-param"><span class="pre">varargin</span></em><span class="sig-paren">)</span><a class="headerlink" href="#reflectance.image_quality" title="Link to this definition">¶</a></dt>
+<dd><p>Compute an image quality metric for each bscan in I.</p>
+<section id="id36">
+<h3>Input arguments (mandatory)<a class="headerlink" href="#id36" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>I</strong>:           2D or 3D matrix with bscan data. If 3D data the 3rd dimension is assumed to be the bscan index.</p></li>
+<li><p><strong>metric</strong>:      Metric used to compute image quality. Accepted options</p>
+<ul>
+<li><p>‘mTCI’: maximum tissue contrast index [3].</p></li>
+<li><p>‘snr’: signal to noise ratio.</p></li>
+<li><p>‘psnr’: peak to noise ratio [1].</p></li>
+<li><p>‘cnr’: contrast to noise ratio [2].</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id37">
+<h3>Input arguments (optional)<a class="headerlink" href="#id37" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>scanner</strong>: String defining the OCT scanner (when using mTCI). If not provided an arbitrary value will be used.</p>
+<ul>
+<li><p>‘Cirrus’</p></li>
+<li><p>‘RTVue’</p></li>
+<li><p>‘Spectralis’</p></li>
+<li><p>‘3D-OCT-1000’</p></li>
+</ul>
+</li>
+<li><p><strong>seg</strong>:           struct with segmentation used in ‘snr’,’psnr’,’cnr’.</p></li>
+</ul>
+</section>
+<section id="id38">
+<h3>Output arguments<a class="headerlink" href="#id38" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>iq</strong>: Image quality metric.</p></li>
+</ul>
+</section>
+<section id="id39">
+<h3>Notes<a class="headerlink" href="#id39" title="Link to this heading">¶</a></h3>
+<p>The definition of SNR, CNR varies across the literature. Check the
+references for the precise definition implemented here.</p>
+<p>Here SNR, PSNR and CNR rely on an accurate segmentation of both the ILM
+and the BM. If the image is pure nois, highly ocluded, or the 
+segmentation is wrong these metrics might not work.</p>
+<p>A more accurate noise estimation procedure may require acquiring a NOISE
+profiling or reference image [4].</p>
+</section>
+<section id="id40">
+<h3>References<a class="headerlink" href="#id40" title="Link to this heading">¶</a></h3>
+<p>[1] Shirasawa, Objective Determination of Optimal Number of Spectral-
+Domain Optical Coherence Tomographic Images of Retina to Average, PLOS
+ONE, 2014. <a class="reference external" href="http://dx.doi.org/10.1371/journal.pone.0110550">http://dx.doi.org/10.1371/journal.pone.0110550</a></p>
+<p>[2] Rico-Jimenez J J, Real-time OCT image denoising using a self-fusion
+neural network,” Biomed. Opt. Express, 2022.
+<a class="reference external" href="https://doi.org/10.1364/BOE.451029">https://doi.org/10.1364/BOE.451029</a></p>
+<p>[3] Huang, Signal Quality Assessment of Retinal Optical Coherence 
+Tomography Images, IOVS, 2012. <a class="reference external" href="Https://dx.doi.org/10.1167%2Fiovs.11-8755">Https://dx.doi.org/10.1167%2Fiovs.11-8755</a></p>
+<p>[4] Sahu, Statistical modeling and Gaussianization procedure based 
+de-speckling algorithm for retinal OCT images, Journal of Ambient
+Intelligence and Humanized Computing, 2018.</p>
+</section>
+<section id="id41">
+<h3>Example<a class="headerlink" href="#id41" title="Link to this heading">¶</a></h3>
+<section id="compute-mtci-for-a-whole-volume">
+<h4>Compute mTCI for a whole volume<a class="headerlink" href="#compute-mtci-for-a-whole-volume" title="Link to this heading">¶</a></h4>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="o">~</span><span class="p">,</span><span class="w"> </span><span class="o">~</span><span class="p">,</span><span class="w"> </span><span class="n">bscan</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">read_vol</span><span class="p">(</span><span class="n">file</span><span class="p">);</span>
+<span class="n">mTCI</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">image_quality</span><span class="p">(</span><span class="n">bscan</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;mTCI&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;Spectralis&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="mat function">
+<dt class="sig sig-object mat" id="reflectance.normalize_reflectance">
+<span class="sig-name descname"><span class="pre">normalize_reflectance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">bscan</span></em>, <em class="sig-param"><span class="pre">seg</span></em>, <em class="sig-param"><span class="pre">method</span></em><span class="sig-paren">)</span><a class="headerlink" href="#reflectance.normalize_reflectance" title="Link to this definition">¶</a></dt>
+<dd><p>Normalize the intensity (reflectance) of one or more bscans based on the
+reflectance of the RPE layer.</p>
+<section id="id42">
+<h3>Input arguments<a class="headerlink" href="#id42" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>bscan</strong>:       Matrix with B-scans of dimensions n_axial x n_ascan x N_bscan. If 2D matrix then it will be interpreted as a single B-scan.</p></li>
+<li><p><strong>seg</strong>:         Struct with the segmentation of the ILM, IZ_RPE and BM.</p></li>
+<li><p><strong>method</strong>:      Method used to normalize.</p>
+<ul>
+<li><p>‘ascan’: to normalize each A-scan separately</p></li>
+<li><p>‘bscan’: to normalize each B-scan as a whole (default).</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id43">
+<h3>Output arguments<a class="headerlink" href="#id43" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>bscan_norm</strong>:  Normalized bscan images.</p></li>
+</ul>
+</section>
+<section id="id44">
+<h3>Notes<a class="headerlink" href="#id44" title="Link to this heading">¶</a></h3>
+<p>This function relies on an accurate segmentation of the ILM, IZ_RPE and
+BM.</p>
+<p>The normalization sets the low and hight reflectance references to be the
+vitreous and the RPE, respectively. Can be thought as the % of deviation
+from those parametesr. Values outside [0,100] are expected.</p>
+<p>The performance might be somewhat slow due to the necessity of looping 
+through all the A-scans. There might be computational improvements using 
+poly2mask but that needs to be adapted to handle NaNs properly (usual in
+segmentation). It might be also cleaner to use here reflectance_map to
+avoid duplicated code.</p>
+</section>
+<section id="id45">
+<h3>References<a class="headerlink" href="#id45" title="Link to this heading">¶</a></h3>
+<p>[1] Sharafeldeen, Precise higher‐order refectivity and morphology models
+for early diagnosis of diabetic retinopathy using OCT images, Scientific
+Reports, 2021. <a class="reference external" href="https://doi.org/10.1038/s41598-021-83735-7">https://doi.org/10.1038/s41598-021-83735-7</a></p>
+</section>
+<section id="id46">
+<h3>Example<a class="headerlink" href="#id46" title="Link to this heading">¶</a></h3>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="o">~</span><span class="p">,</span><span class="n">seg</span><span class="p">,</span><span class="n">bscan</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">read_vol</span><span class="p">(</span><span class="s">&#39;my_file.vol&#39;</span><span class="p">);</span>
+<span class="n">bscan_norm</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">normalize_reflectance</span><span class="p">(</span><span class="n">bscan</span><span class="p">,</span><span class="w"> </span><span class="n">seg</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="mat function">
+<dt class="sig sig-object mat" id="reflectance.reflectance_map">
+<span class="sig-name descname"><span class="pre">reflectance_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">bscan</span></em>, <em class="sig-param"><span class="pre">method</span></em>, <em class="sig-param"><span class="pre">metric</span></em>, <em class="sig-param"><span class="pre">seg</span></em>, <em class="sig-param"><span class="pre">varargin</span></em><span class="sig-paren">)</span><a class="headerlink" href="#reflectance.reflectance_map" title="Link to this definition">¶</a></dt>
+<dd><p>Create a 2D map (en-face image) of each A-Scan reflectance</p>
+<section id="id47">
+<h3>Input arguments (mandatory)<a class="headerlink" href="#id47" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>bscan</strong>:          3D Volume with b-scans images.</p></li>
+<li><p><strong>method</strong>:         Method to compute reflectance.</p>
+<ul>
+<li><p>‘raw’ (default)</p></li>
+<li><p>‘normalized’</p></li>
+<li><p>‘attenuation’</p></li>
+</ul>
+</li>
+<li><p><strong>metric</strong>:         Metric to be used.</p>
+<ul>
+<li><p>‘mean’</p></li>
+<li><p>‘total’</p></li>
+<li><p>‘layer_index’</p></li>
+</ul>
+</li>
+<li><p><strong>seg</strong>:            Struct with boundary segmentation data (in voxel units measured from the top of each B-Scan). The dimensions must match the provided volume (bscan). If not provided, all the voxels in each A-scan are used.</p></li>
+</ul>
+</section>
+<section id="id48">
+<h3>Input arguments (optional)<a class="headerlink" href="#id48" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>scale_z</strong>: axial (depth) resolution of the image. Necessary if the metric is ‘total reflectance’.</p></li>
+<li><p><strong>top</strong>: Name of the upper boundary of the layer to be analyzed. It must correspond to a field in seg.</p></li>
+<li><p><strong>bottom</strong>: Name of the bottom boundary of the layer to be analyzed. It must correspond to a field in seg.</p></li>
+</ul>
+<p>If only one optional argument is provided that is assumed to be scale_z.
+When two optionals are provided then those are considered as top/bottom
+boundaries. When the three are provided they are assumed in the order:
+scale_z, top and bottom.</p>
+</section>
+<section id="id49">
+<h3>Output arguments<a class="headerlink" href="#id49" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>R</strong>:              2D matrix with reflectance values.</p></li>
+</ul>
+</section>
+<section id="id50">
+<h3>Notes<a class="headerlink" href="#id50" title="Link to this heading">¶</a></h3>
+<p>Reflectance may be derived from raw voxel intensities, normalized
+intensities or attenuation coefficient.</p>
+<p>When using ‘normalized’, reflectance is corrected based on the vitreous
+and the RPE layer. See normalize_reflectance.m for details.</p>
+<p>Attenuation coefficient computation relies on several assumptions on
+the optical properties of the tissue. See compute_attenuation.m for
+details.</p>
+<p>‘layer_index’ metric is described in [1]. It includes a sort of
+normalization at a bscan level (the 99 percentile is used for 
+normalization).</p>
+</section>
+<section id="id51">
+<h3>References<a class="headerlink" href="#id51" title="Link to this heading">¶</a></h3>
+<p>[1] Varga et al., “Investigating Tissue Optical Properties and Texture
+Descriptors of the Retina in Patients with Multiple Sclerosis”, PLos One,
+2015</p>
+</section>
+<section id="id52">
+<h3>Example<a class="headerlink" href="#id52" title="Link to this heading">¶</a></h3>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">header</span><span class="p">,</span><span class="w"> </span><span class="n">seg</span><span class="p">,</span><span class="w"> </span><span class="n">bscan</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">read_vol</span><span class="p">(</span><span class="s">&#39;my_file.vol&#39;</span><span class="p">);</span>
+<span class="n">R</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">reflectance_map</span><span class="p">(</span><span class="n">bscan</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;raw&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;total&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;ILM&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;RPE&#39;</span><span class="p">)</span><span class="w">   </span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="mat function">
+<dt class="sig sig-object mat" id="reflectance.stack_bscans">
+<span class="sig-name descname"><span class="pre">stack_bscans</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">bscan</span></em>, <em class="sig-param"><span class="pre">seg</span></em>, <em class="sig-param"><span class="pre">layers</span></em><span class="sig-paren">)</span><a class="headerlink" href="#reflectance.stack_bscans" title="Link to this definition">¶</a></dt>
+<dd><p>Stack the bscan portion showing the same layer into the a single image as 
+proposed in [1].</p>
+<section id="id53">
+<h3>Input arguments<a class="headerlink" href="#id53" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>bscan</strong>:       Matrix with B-scans of dimensions n_axial x n_ascan x n_bscan.</p></li>
+<li><p><strong>seg</strong>:         Struct with segmentation data.</p></li>
+<li><dl class="simple">
+<dt><strong>layers</strong>:      String or a cell array of strings with the name of the layer to be stacked. Note that, depending on the layer of</dt><dd><p>interest, the segmentation must follow a certain naming
+convention (see the beggining of the function).</p>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+<section id="id54">
+<h3>Output arguments<a class="headerlink" href="#id54" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>stacked</strong>:     Struct with a stacked b-scan for each layer in layers.</p></li>
+</ul>
+</section>
+<section id="id55">
+<h3>Notes<a class="headerlink" href="#id55" title="Link to this heading">¶</a></h3>
+<p>The stacking process is sensitive to NaN values in the segmentation. This
+function performs a rough extrapolation of NaN values that may not work
+if the number of NaN values is high.</p>
+</section>
+<section id="id56">
+<h3>References<a class="headerlink" href="#id56" title="Link to this heading">¶</a></h3>
+<p>[1] Tazarjani, Retinal OCT Texture Analysis for Differentiating Healthy
+Controls from Multiple Sclerosis (MS) with/without Optic Neuritis,
+BioMed Research International, 2021. <a class="reference external" href="https://doi.org/10.1155/2021/5579018">https://doi.org/10.1155/2021/5579018</a></p>
+</section>
+<section id="id57">
+<h3>Example<a class="headerlink" href="#id57" title="Link to this heading">¶</a></h3>
+<section id="generate-stacked-b-scans-of-rnfl-and-gcipl-layers">
+<h4>Generate stacked b-scans of RNFL and GCIPL layers<a class="headerlink" href="#generate-stacked-b-scans-of-rnfl-and-gcipl-layers" title="Link to this heading">¶</a></h4>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="o">~</span><span class="p">,</span><span class="w"> </span><span class="n">seg</span><span class="p">,</span><span class="w"> </span><span class="n">bscan</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">read_vol</span><span class="p">(</span><span class="n">file</span><span class="p">);</span>
+<span class="n">layers</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">{</span><span class="s">&#39;RNFL&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;GCIPL&#39;</span><span class="p">};</span>
+<span class="n">stacked</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">stack_bscans</span><span class="p">(</span><span class="n">bscan</span><span class="p">,</span><span class="w"> </span><span class="n">seg</span><span class="p">,</span><span class="w"> </span><span class="n">layers</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+</dd></dl>
+
+</section>
+<hr class="docutils" />
+<section id="structural-analysis">
+<h2>Structural analysis<a class="headerlink" href="#structural-analysis" title="Link to this heading">¶</a></h2>
+<dl class="mat function">
+<dt class="sig sig-object mat" id="structure.compute_thickness">
+<span class="sig-name descname"><span class="pre">compute_thickness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">seg</span></em>, <em class="sig-param"><span class="pre">layers</span></em>, <em class="sig-param"><span class="pre">scale_z</span></em><span class="sig-paren">)</span><a class="headerlink" href="#structure.compute_thickness" title="Link to this definition">¶</a></dt>
+<dd><p>Compute thickness the specified layers specified by using the
+segmentation data stored in ‘seg’ struct.</p>
+<section id="id58">
+<h3>Input arguments<a class="headerlink" href="#id58" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>seg</strong>: struct with the segmentation of the boundaries. Each field must correspond to a specific boundary.</p></li>
+<li><p><strong>layers</strong>: string or a cell array of strings indicating the layers for which to compute thickness.</p></li>
+<li><p><strong>scale_z</strong>: (optional). Axial (depth) resolution of the images in mm. If provided, it is used to transform thicknes values from pixel to um units.</p></li>
+</ul>
+</section>
+<section id="id59">
+<h3>Output arguments<a class="headerlink" href="#id59" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Thickness</strong>      Struct with thickness values for each layer.</p></li>
+</ul>
+</section>
+<section id="id60">
+<h3>Notes<a class="headerlink" href="#id60" title="Link to this heading">¶</a></h3>
+<p>The naming convention of the boundaries and layers might differ both in
+the literature and in different segmentation algorithms. Here we mostly
+follow the APOSTEL 2.0 recommendations ([1]) as specified below:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>BM:    Bruch’s membrane</p></li>
+<li><p>ELM:   external limiting membrane</p></li>
+<li><p>EZ:    ellipsoid zone</p></li>
+<li><p>GCL:   ganglion cell layer</p></li>
+<li><p>GCIPL: ganglion cell and inner plexiform layer (composite)</p></li>
+<li><p>ILM:   inner limiting membrane</p></li>
+<li><p>INL:   inner nuclear layer</p></li>
+<li><p>IPL:   inner plexiform layer</p></li>
+<li><p>IRL:   inner retinal layers (composite)</p></li>
+<li><p>IZ:    interdigitation zone</p></li>
+<li><p>MZ:    myoid zone</p></li>
+<li><p>ONL:   outer nuclear layer</p></li>
+<li><p>ONPL:  outer nuclear - plexiform layer (composite)</p></li>
+<li><p>OPL:   outer plexiform layer</p></li>
+<li><p>OSP:   outer segment of the photoreceptors</p></li>
+<li><p>RNFL:  retinal nerve fiber layer</p></li>
+<li><p>RPE:   retinal pigment epithelium</p></li>
+</ul>
+</div></blockquote>
+<p>For boundaries and layer composites not specified in [1] we have used
+underscores to denote top/bottom boundaries. To consider the following
+naming case:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>EZ_OSP: boundary between EZ and OSP</p></li>
+<li><p>EZOSP: composite layer with EZ + OSP</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id61">
+<h3>References<a class="headerlink" href="#id61" title="Link to this heading">¶</a></h3>
+<p>[1] Aytulun et al., “APOSTEL 2.0 Recommendations for Reporting 
+Quantitative Optical Coherence Tomography Studies”, Neurology, 2021
+<a class="reference external" href="https://doi.org/10.1212/WNL.0000000000012125">https://doi.org/10.1212/WNL.0000000000012125</a></p>
+</section>
+<section id="id62">
+<h3>Example<a class="headerlink" href="#id62" title="Link to this heading">¶</a></h3>
+<section id="compute-thickness-for-the-nfl-and-gcl-layers">
+<h4>Compute thickness for the NFL and GCL layers<a class="headerlink" href="#compute-thickness-for-the-nfl-and-gcl-layers" title="Link to this heading">¶</a></h4>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">header</span><span class="p">,</span><span class="w"> </span><span class="n">seg</span><span class="p">,</span><span class="w"> </span><span class="o">~</span><span class="p">,</span><span class="w"> </span><span class="o">~</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">read_vol</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="s">&#39;verbose&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;coordinates&#39;</span><span class="p">);</span>
+<span class="n">Thickness</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">compute_thickness</span><span class="p">(</span><span class="n">seg</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="s">&#39;NFL&#39;</span><span class="p">,</span><span class="s">&#39;GCL&#39;</span><span class="p">},</span><span class="w"> </span><span class="n">header</span><span class="p">.</span><span class="n">scale_z</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="mat function">
+<dt class="sig sig-object mat" id="structure.fit_pit_model">
+<span class="sig-name descname"><span class="pre">fit_pit_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">theta</span></em>, <em class="sig-param"><span class="pre">rho</span></em>, <em class="sig-param"><span class="pre">Z</span></em>, <em class="sig-param"><span class="pre">pit_model</span></em>, <em class="sig-param"><span class="pre">varargin</span></em><span class="sig-paren">)</span><a class="headerlink" href="#structure.fit_pit_model" title="Link to this definition">¶</a></dt>
+<dd><p>Fit a mathematical model to the foveal pit</p>
+<section id="id63">
+<h3>Input arguments (mandatory)<a class="headerlink" href="#id63" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>theta</strong>:       Matrix with theta coordinates (polar). It expects data in format n_directions x n_points/direction.</p></li>
+<li><p><strong>rho</strong>:         Matrix with rho value of polar coordinates.It expects data in format n_directions x n_points/direction.</p></li>
+<li><p><strong>Z</strong>             Thickness map.</p></li>
+<li><p><strong>pit_model</strong>    String defining the mathematical model to be used:</p>
+<ul>
+<li><p>‘Breher’</p></li>
+<li><p>‘Ding’</p></li>
+<li><p>‘Dubis’</p></li>
+<li><p>‘Liu’</p></li>
+<li><p>‘Scheibe’</p></li>
+<li><p>‘Yadav’</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="input-arguments-name-value-pairs">
+<h3>Input arguments (name-value pairs)<a class="headerlink" href="#input-arguments-name-value-pairs" title="Link to this heading">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>max_iter</strong>:       Maximum number of iterations for each fitting. Default: 1000</p></li>
+<li><p><strong>tol_x</strong>:          Tolerance of the errors during fitting. Default: 1e-6</p></li>
+<li><p><strong>tol_fun</strong>:        Tolerance of the function during fitting. Default: 1e-6</p></li>
+<li><p><strong>x0’</strong>:            Initial iteration coefficient values. By default specific values related to the model are used.</p></li>
+<li><p><strong>‘x_low</strong>:         Inferior limits of model coefficients.</p></li>
+<li><p><strong>x_sup</strong>:          Superior limits of model coefficients.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id64">
+<h3>Output arguments<a class="headerlink" href="#id64" title="Link to this heading">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Z_fit</strong>:           Matrix with fitted values</p></li>
+<li><p><strong>Fit_coeff</strong>:      Struct with estimated model coefficients</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id65">
+<h3>References<a class="headerlink" href="#id65" title="Link to this heading">¶</a></h3>
+<p>[1] Romero-Bascones et al., Foveal Pit Morphology Characterization: A 
+Quantitative Analysis of the Key Methodological Steps, Entropy, 2021
+<a class="reference external" href="https://doi.org/10.3390/e23060699">https://doi.org/10.3390/e23060699</a></p>
+<p>[2] Breher K. et al., Direct Modeling of Foveal Pit Morphology from 
+Distortion-Corrected OCT Images, Biomedical Optics Express, 2019.</p>
+<p>[3] Ding Y. et al., Application of an OCT Data-Based Mathematical Model 
+of the Foveal Pit in Parkinson Disease, Journal fo Neural Transmission,
+2014.</p>
+<p>[4] Dubis A.M. et al., “Reconstructing Foveal Pit Morphology from Optical 
+Coherence Tomography Imaging”, British Journal of Ophthalmology, 2009.</p>
+<p>[5] Liu L. et al., Sloped Piecemeal Gaussian Model for Characterising 
+Foveal Pit Shape, Ophthalmic Physiological Optics, 2016.</p>
+<p>[6] Scheibe P. et al., Parametric Model for the 3D Reconstruction of
+Individual Fovea Shape from OCT Data, Experimental Eye Research, 2014.</p>
+<p>[7] Yadav S. et al., CuBe: Parametric Modeling of 3D Foveal Shape Using 
+Cubic Bézier, Biomedical Optics Express, 2017.</p>
+</section>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="mat function">
+<dt class="sig sig-object mat" id="structure.get_morph_params">
+<span class="sig-name descname"><span class="pre">get_morph_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">rho</span></em>, <em class="sig-param"><span class="pre">Z</span></em>, <em class="sig-param"><span class="pre">parameters</span></em>, <em class="sig-param"><span class="pre">average</span></em><span class="sig-paren">)</span><a class="headerlink" href="#structure.get_morph_params" title="Link to this definition">¶</a></dt>
+<dd><p>Compute morphological parameters of the foveal pit</p>
+<section id="id66">
+<h3>Input arguments<a class="headerlink" href="#id66" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>rho</strong>:         Matrix with rho coordinates (polar coordinates). Each row is a different angular direction.</p></li>
+<li><p><strong>Z</strong>:           Matrix with thickness profile values. Each row is a different angular direction.</p></li>
+<li><p><strong>parameters</strong>:  String or cell array of strings with the name of the parameters to computed. By default all available parameters are returned.</p></li>
+<li><p><strong>average</strong>:     If true then radial parameters such as max slope are averaged across angular directions. Default is true.</p></li>
+</ul>
+</section>
+<section id="id67">
+<h3>Output arguments<a class="headerlink" href="#id67" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>X</strong>:           Struct with computed features.</p></li>
+</ul>
+</section>
+<section id="id68">
+<h3>Notes<a class="headerlink" href="#id68" title="Link to this heading">¶</a></h3>
+<p>This parameters are usually computed for the TRT profile but can be 
+computed as well for layers with a convex thickness profile such as GCL,
+IPL or INL</p>
+</section>
+<section id="id69">
+<h3>References<a class="headerlink" href="#id69" title="Link to this heading">¶</a></h3>
+<p>[1] Scheibe P. et al., Parametric Model for the 3D Reconstruction of
+Individual Fovea Shape from OCT Data, Experimental Eye Research, 2014.</p>
+<p>[2] Yadav S. et al., CuBe: Parametric Modeling of 3D Foveal Shape Using 
+Cubic Bézier, Biomedical Optics Express, 2017.</p>
+</section>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="mat function">
+<dt class="sig sig-object mat" id="structure.smooth_pit">
+<span class="sig-name descname"><span class="pre">smooth_pit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">rho</span></em>, <em class="sig-param"><span class="pre">Z</span></em>, <em class="sig-param"><span class="pre">span</span></em><span class="sig-paren">)</span><a class="headerlink" href="#structure.smooth_pit" title="Link to this definition">¶</a></dt>
+<dd><p>Smooth the foveal pit based on LOESS smoothing</p>
+<section id="id70">
+<h3>Input arguments<a class="headerlink" href="#id70" title="Link to this heading">¶</a></h3>
+<ul>
+<li><p><strong>rho</strong>:         Matrix with radial coordinates of thickness values.</p></li>
+<li><p><strong>Z</strong>:           Matrix with foveal pit values.</p></li>
+<li><p><strong>span</strong>:        Percentage of samples included in each window.</p>
+<p>Output arguments:</p>
+<p>‘Z_smooth’       Smoothed version of the thickness map.</p>
+</li>
+</ul>
+</section>
+<section id="id71">
+<h3>Notes<a class="headerlink" href="#id71" title="Link to this heading">¶</a></h3>
+<p>The function expects the data in radial format: [n_angle x n_points].
+To use it for entire B-Scans convert data to radial format first.</p>
+</section>
+<section id="id72">
+<h3>References<a class="headerlink" href="#id72" title="Link to this heading">¶</a></h3>
+<p>[1] Romero-Bascones et al., Foveal Pit Morphology Characterization: A 
+Quantitative Analysis of the Key Methodological Steps, Entropy, 2021
+<a class="reference external" href="https://doi.org/10.3390/e23060699">https://doi.org/10.3390/e23060699</a></p>
+</section>
+<section id="id73">
+<h3>Example<a class="headerlink" href="#id73" title="Link to this heading">¶</a></h3>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">header</span><span class="p">,</span><span class="w"> </span><span class="n">seg</span><span class="p">]</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="n">read_vol</span><span class="p">(</span><span class="s">&#39;my_file.vol&#39;</span><span class="p">,</span><span class="s">&#39;coordinates&#39;</span><span class="p">);</span>
+<span class="n">Thickness</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">compute_thickness</span><span class="p">(</span><span class="n">seg</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;TRT&#39;</span><span class="p">);</span>
+<span class="p">[</span><span class="n">X</span><span class="p">,</span><span class="w"> </span><span class="n">Y</span><span class="p">,</span><span class="w"> </span><span class="n">TRT</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">resample_map</span><span class="p">(</span><span class="n">header</span><span class="p">.</span><span class="n">X_oct</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="p">.</span><span class="n">Y_oct</span><span class="p">,</span><span class="w"> </span><span class="n">Thickness</span><span class="p">.</span><span class="n">TRT</span><span class="p">,</span><span class="w"> </span><span class="k">...</span>
+<span class="s">&#39;star&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;n_point&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;max_d&#39;</span><span class="p">,</span><span class="w"> </span><span class="mf">2.4</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;n_angle&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">n_angle</span><span class="p">);</span><span class="w">     </span>
+<span class="p">[</span><span class="n">theta</span><span class="p">,</span><span class="w"> </span><span class="n">rho</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">cart2pol</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="w"> </span><span class="n">Y</span><span class="p">);</span>
+<span class="n">TRT_smooth</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">smooth_pit</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span><span class="w"> </span><span class="n">TRT</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">);</span><span class="w">     </span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+</section>
+<hr class="docutils" />
+<section id="spatial-analysis">
+<h2>Spatial analysis<a class="headerlink" href="#spatial-analysis" title="Link to this heading">¶</a></h2>
+<dl class="mat function">
+<dt class="sig sig-object mat" id="spatial.find_fovea">
+<span class="sig-name descname"><span class="pre">find_fovea</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">X</span></em>, <em class="sig-param"><span class="pre">Y</span></em>, <em class="sig-param"><span class="pre">TRT</span></em>, <em class="sig-param"><span class="pre">method</span></em>, <em class="sig-param"><span class="pre">max_d</span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial.find_fovea" title="Link to this definition">¶</a></dt>
+<dd><p>Find foveal center based on total retinal thickness (TRT) map.</p>
+<section id="id74">
+<h3>Input arguments<a class="headerlink" href="#id74" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>X</strong>:              Matrix with X coordinates of each A-Scan.</p></li>
+<li><p><strong>Y</strong>:              Matrix with Y coordinates of each A-Scan.</p></li>
+<li><p><strong>TRT</strong>:            Matrix with total retinal thickness values.</p></li>
+<li><p><strong>method</strong>:         Method used to find the foveal center. Options [‘flood’ (default), ‘min’, ‘resample_min’, ‘smooth_min’]</p></li>
+<li><p><strong>max_d</strong>:          Maximum alignment error. Default: 0.85</p></li>
+</ul>
+</section>
+<section id="id75">
+<h3>Output arguments<a class="headerlink" href="#id75" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>x_fovea</strong>:        X coordinate of the foveal center.</p></li>
+<li><p><strong>y_fovea</strong>:        Y coordinate of the foveal center.</p></li>
+</ul>
+</section>
+<section id="id76">
+<h3>Notes<a class="headerlink" href="#id76" title="Link to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">smooth+min</span></code> method is based on the <code class="docutils literal notranslate"><span class="pre">foveafinder.m</span></code> function of
+AURA tools. If you use it, please provide appropriate credit to the
+original work (<a class="reference external" href="https://www.nitrc.org/projects/aura_tools/">https://www.nitrc.org/projects/aura_tools/</a>).</p>
+</section>
+<section id="id77">
+<h3>References<a class="headerlink" href="#id77" title="Link to this heading">¶</a></h3>
+<p>[1] Romero-Bascones et al., Foveal Pit Morphology Characterization: A 
+Quantitative Analysis of the Key Methodological Steps, Entropy, 2021
+<a class="reference external" href="https://doi.org/10.3390/e23060699">https://doi.org/10.3390/e23060699</a></p>
+</section>
+<section id="id78">
+<h3>Example<a class="headerlink" href="#id78" title="Link to this heading">¶</a></h3>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">file</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&#39;../data/raster.vol&#39;</span><span class="p">;</span>
+<span class="p">[</span><span class="n">header</span><span class="p">,</span><span class="w"> </span><span class="n">seg</span><span class="p">,</span><span class="w"> </span><span class="o">~</span><span class="p">,</span><span class="w"> </span><span class="o">~</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">read_vol</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;coordinates&#39;</span><span class="p">);</span>
+<span class="n">Thickness</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">compute_thickness</span><span class="p">(</span><span class="n">seg</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;TRT&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="p">.</span><span class="n">scale_z</span><span class="p">);</span>
+<span class="p">[</span><span class="n">x_fovea</span><span class="p">,</span><span class="w"> </span><span class="n">y_fovea</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">find_fovea</span><span class="p">(</span><span class="n">header</span><span class="p">.</span><span class="n">X</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="p">.</span><span class="n">Y</span><span class="p">,</span><span class="w"> </span><span class="n">Thickness</span><span class="p">.</span><span class="n">TRT</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="mat function">
+<dt class="sig sig-object mat" id="spatial.flip_coordinates">
+<span class="sig-name descname"><span class="pre">flip_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">X</span></em>, <em class="sig-param"><span class="pre">eye</span></em>, <em class="sig-param"><span class="pre">eye_ref</span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial.flip_coordinates" title="Link to this definition">¶</a></dt>
+<dd><p>Flip X coordinates if eye is equal to eye_ref</p>
+<section id="id79">
+<h3>Input arguments<a class="headerlink" href="#id79" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>X</strong>: input x coordinates (in any shape)</p></li>
+<li><p><strong>eye</strong>: string with eye to be tested</p></li>
+<li><p><strong>eye_ref</strong>: reference to decide when to flip (usually OS)</p></li>
+</ul>
+</section>
+<section id="id80">
+<h3>Output arguments<a class="headerlink" href="#id80" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>X</strong>: flipped coordinates</p></li>
+</ul>
+</section>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="mat function">
+<dt class="sig sig-object mat" id="spatial.get_ascan_coordinates">
+<span class="sig-name descname"><span class="pre">get_ascan_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">header</span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial.get_ascan_coordinates" title="Link to this definition">¶</a></dt>
+<dd><p>Compute A-scan coordinates (X, Y) based on the scanning protocol</p>
+<section id="id81">
+<h3>Input arguments<a class="headerlink" href="#id81" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>header</strong>: File header obtained when reading an OCT file.</p></li>
+</ul>
+</section>
+<section id="id82">
+<h3>Output arguments<a class="headerlink" href="#id82" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>X</strong>:      2D matrix with X coordinates pointing temporal to nasal.</p></li>
+<li><p><strong>Y</strong>:      2D matrix with Y coordinates pointing inferior to superior.</p></li>
+</ul>
+</section>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="mat function">
+<dt class="sig sig-object mat" id="spatial.resample_map">
+<span class="sig-name descname"><span class="pre">resample_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">X</span></em>, <em class="sig-param"><span class="pre">Y</span></em>, <em class="sig-param"><span class="pre">Z</span></em>, <em class="sig-param"><span class="pre">grid_type</span></em>, <em class="sig-param"><span class="pre">varargin</span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial.resample_map" title="Link to this definition">¶</a></dt>
+<dd><p>Resample a 2D map into a new grid by interpolation/extrapolation</p>
+<section id="id83">
+<h3>Input arguments (mandatory)<a class="headerlink" href="#id83" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>X</strong>:              Original X coordinates.</p></li>
+<li><p><strong>Y</strong>:              Original Y coordinates.</p></li>
+<li><p><strong>Z</strong>:              Original Z values (e.g., thickness values).</p></li>
+<li><p><strong>grid_type</strong>:      String specifying the resampling grid type. Depending on the grid type it must be followed by specific extra arguments. Options: [‘regular’, ‘star’]</p></li>
+</ul>
+</section>
+<section id="id84">
+<h3>Input arguments (name/value pair)<a class="headerlink" href="#id84" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>max_d</strong>:          Maximum X and Y values (‘regular’) or radius (‘star’)</p></li>
+<li><p><strong>n_point</strong>:        If grid_type == ‘regular’, the number of points in X and Y directions. If ‘star’, the number points from 0 to max_d</p></li>
+<li><p><strong>n_angle</strong>:        Number of directions to use (when the grid_type is ‘star’)</p></li>
+<li><p><strong>theta_0</strong>:        Initial angle for star resampling</p></li>
+<li><p><strong>interp_method</strong>:  Interpolation method [‘linear’ (default),’cubic’]</p></li>
+<li><p><strong>extrapolate</strong>    If true then points with NaN outside the original range are extrapolated. Default: false</p></li>
+</ul>
+</section>
+<section id="id85">
+<h3>Output arguments<a class="headerlink" href="#id85" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>X1</strong>             New X coordinates.</p></li>
+<li><p><strong>Y1</strong>             New Y coordinates.</p></li>
+<li><p><strong>Z1</strong>             New Z values.</p></li>
+</ul>
+</section>
+<section id="id86">
+<h3>Notes<a class="headerlink" href="#id86" title="Link to this heading">¶</a></h3>
+<p>If the region to cover is bigger than the original data region it might
+not be possible to extrapolate values accurately.</p>
+</section>
+<section id="id87">
+<h3>Example<a class="headerlink" href="#id87" title="Link to this heading">¶</a></h3>
+<p>Resample original A-scans into a regular grid</p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">header</span><span class="p">,</span><span class="w"> </span><span class="n">seg</span><span class="p">,</span><span class="w"> </span><span class="o">~</span><span class="p">,</span><span class="w"> </span><span class="o">~</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">read_vol</span><span class="p">(</span><span class="n">myfile</span><span class="p">.</span><span class="n">vol</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;coordinates&#39;</span><span class="p">);</span>
+<span class="n">Thickness</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">compute_thickness</span><span class="p">(</span><span class="n">seg</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;TRT&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="p">.</span><span class="n">scale_z</span><span class="p">);</span>
+
+<span class="p">[</span><span class="n">X</span><span class="p">,</span><span class="w"> </span><span class="n">Y</span><span class="p">,</span><span class="w"> </span><span class="n">TRT</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">resample_map</span><span class="p">(</span><span class="n">header</span><span class="p">.</span><span class="n">X_oct</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="p">.</span><span class="n">Y_oct</span><span class="p">,</span><span class="w"> </span><span class="n">Thickness</span><span class="p">.</span><span class="n">TRT</span><span class="p">,</span><span class="w"> </span><span class="k">...</span>
+<span class="s">&#39;regular&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;n_point&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;max_d&#39;</span><span class="p">,</span><span class="w"> </span><span class="mf">2.5</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="mat function">
+<dt class="sig sig-object mat" id="spatial.sectorize_map">
+<span class="sig-name descname"><span class="pre">sectorize_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">X</span></em>, <em class="sig-param"><span class="pre">Y</span></em>, <em class="sig-param"><span class="pre">Z</span></em>, <em class="sig-param"><span class="pre">metric</span></em>, <em class="sig-param"><span class="pre">sector_type</span></em>, <em class="sig-param"><span class="pre">varargin</span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial.sectorize_map" title="Link to this definition">¶</a></dt>
+<dd><p>Sectorize a 2D map into several sectors (e.g., ETDRS average)</p>
+<section id="id88">
+<h3>Input arguments<a class="headerlink" href="#id88" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>X</strong>:              X coordinates of map points</p></li>
+<li><p><strong>Y</strong>:              Y coordinates of map points</p></li>
+<li><p><strong>Z</strong>:              Z coordinates of map points</p></li>
+<li><p><strong>metric</strong>         metric to be used to sectorize data. Options: [‘mean’, ‘std’, skewness’, ‘kurtosis’]</p></li>
+<li><p><strong>sector_type</strong>:   sectorization definition. Two options:</p>
+<ul>
+<li><p>String defining the sectorization type. It must be followed by appropriate arguments (see examples).</p></li>
+<li><p>Struct with sectorization info created beforehand.</p></li>
+</ul>
+</li>
+<li><p><strong>varargin</strong>:      extra arguments to define the sectorization.</p></li>
+</ul>
+</section>
+<section id="id89">
+<h3>Output arguments<a class="headerlink" href="#id89" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Zs</strong>:             Sectorized values for each sector.</p></li>
+<li><p><strong>Sectors</strong>:        Struct with spatial data defining the sectorization. Useful when the Sectors input variable is a string.</p></li>
+</ul>
+</section>
+<section id="id90">
+<h3>Notes<a class="headerlink" href="#id90" title="Link to this heading">¶</a></h3>
+<p>All angles are expected in radians. To convert from degrees to radians 
+use deg2rad() function.</p>
+</section>
+<section id="id91">
+<h3>Examples<a class="headerlink" href="#id91" title="Link to this heading">¶</a></h3>
+<section id="etdrs-sectorization">
+<h4>ETDRS sectorization<a class="headerlink" href="#etdrs-sectorization" title="Link to this heading">¶</a></h4>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">header</span><span class="p">,</span><span class="w"> </span><span class="n">seg</span><span class="p">,</span><span class="w"> </span><span class="o">~</span><span class="p">,</span><span class="w"> </span><span class="o">~</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">read_vol</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="s">&#39;verbose&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;get_coordinates&#39;</span><span class="p">);</span>
+<span class="n">Thickness</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">compute_thickness</span><span class="p">(</span><span class="n">seg</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;TRT&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="p">.</span><span class="n">scale_z</span><span class="p">);</span>
+<span class="p">[</span><span class="n">X</span><span class="p">,</span><span class="w"> </span><span class="n">Y</span><span class="p">,</span><span class="w"> </span><span class="n">TRT</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">resample_map</span><span class="p">(</span><span class="n">header</span><span class="p">.</span><span class="n">X_oct</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="p">.</span><span class="n">Y_oct</span><span class="p">,</span><span class="w"> </span><span class="n">Thickness</span><span class="p">.</span><span class="n">TRT</span><span class="p">,</span><span class="w"> </span><span class="k">...</span>
+<span class="w">     </span><span class="s">&#39;regular&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;n_point&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;max_d&#39;</span><span class="p">,</span><span class="w"> </span><span class="mf">2.5</span><span class="p">);</span>
+<span class="p">[</span><span class="n">Z</span><span class="p">,</span><span class="w"> </span><span class="n">G</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">sectorize_map</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="w"> </span><span class="n">Y</span><span class="p">,</span><span class="w"> </span><span class="n">TRT</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;mean&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;etdrs&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="ring-sectorization">
+<h4>2 ring sectorization<a class="headerlink" href="#ring-sectorization" title="Link to this heading">¶</a></h4>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">header</span><span class="p">,</span><span class="w"> </span><span class="n">seg</span><span class="p">,</span><span class="w"> </span><span class="o">~</span><span class="p">,</span><span class="w"> </span><span class="o">~</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">read_vol</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="s">&#39;verbose&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;get_coordinates&#39;</span><span class="p">);</span>
+<span class="n">Thickness</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">compute_thickness</span><span class="p">(</span><span class="n">seg</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;TRT&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="p">.</span><span class="n">scale_z</span><span class="p">);</span>
+<span class="p">[</span><span class="n">X</span><span class="p">,</span><span class="w"> </span><span class="n">Y</span><span class="p">,</span><span class="w"> </span><span class="n">TRT</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">resample_map</span><span class="p">(</span><span class="n">header</span><span class="p">.</span><span class="n">X_oct</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="p">.</span><span class="n">Y_oct</span><span class="p">,</span><span class="w"> </span><span class="n">Thickness</span><span class="p">.</span><span class="n">TRT</span><span class="p">,</span><span class="w"> </span><span class="k">...</span>
+<span class="w">     </span><span class="s">&#39;regular&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;n_point&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;max_d&#39;</span><span class="p">,</span><span class="w"> </span><span class="mf">2.5</span><span class="p">);</span>
+<span class="p">[</span><span class="n">Z</span><span class="p">,</span><span class="w"> </span><span class="n">G</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">sectorize_map</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="w"> </span><span class="n">Y</span><span class="p">,</span><span class="w"> </span><span class="n">TRT</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;mean&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;ring&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="mf">0.5</span><span class="w"> </span><span class="mf">1.5</span><span class="w"> </span><span class="mi">3</span><span class="p">]);</span>
+</pre></div>
+</div>
+</section>
+</section>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="mat function">
+<dt class="sig sig-object mat" id="spatial.sectorize_peripapillar">
+<span class="sig-name descname"><span class="pre">sectorize_peripapillar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">X</span></em>, <em class="sig-param"><span class="pre">Y</span></em>, <em class="sig-param"><span class="pre">Z</span></em>, <em class="sig-param"><span class="pre">sect_type</span></em>, <em class="sig-param"><span class="pre">varargin</span></em><span class="sig-paren">)</span><a class="headerlink" href="#spatial.sectorize_peripapillar" title="Link to this definition">¶</a></dt>
+<dd><p>Sectorize thickness values of a peripapillar circular scan</p>
+<section id="id92">
+<h3>Input arguments<a class="headerlink" href="#id92" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>X</strong>:              X coordinates of map points</p></li>
+<li><p><strong>Y</strong>:              Y coordinates of map points</p></li>
+<li><p><strong>Z</strong>:              Z coordinates of map points</p></li>
+<li><p><strong>sector_type</strong>:    String defining the sectorization type:</p>
+<ul>
+<li><p>‘average’</p></li>
+<li><p>‘4_quadrant’</p></li>
+<li><p>‘qustom’: must be followed by the number of angles and the initial angle (see examples).</p></li>
+</ul>
+</li>
+<li><p><strong>varargin</strong>:       Extra arguments to define the sectorization.</p></li>
+</ul>
+</section>
+<section id="id93">
+<h3>Output arguments<a class="headerlink" href="#id93" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Zs</strong>:             Sectorized values for each sector.</p></li>
+</ul>
+</section>
+<section id="id94">
+<h3>Notes<a class="headerlink" href="#id94" title="Link to this heading">¶</a></h3>
+<p>X and Y coordinates must follow the temporal-nasal and inferior-superior
+conventions.</p>
+<p>‘4_quadrant’ sectorization returns values in the order: ‘nasal’,
+‘superior’, ‘temporal’ and ‘inferior’.</p>
+</section>
+<section id="id95">
+<h3>Examples<a class="headerlink" href="#id95" title="Link to this heading">¶</a></h3>
+<section id="quadrants-sectorization">
+<h4>4 quadrants sectorization<a class="headerlink" href="#quadrants-sectorization" title="Link to this heading">¶</a></h4>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">header</span><span class="p">,</span><span class="w"> </span><span class="n">seg</span><span class="p">,</span><span class="w"> </span><span class="o">~</span><span class="p">,</span><span class="w"> </span><span class="o">~</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">read_vol</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="s">&#39;verbose&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;get_coordinates&#39;</span><span class="p">);</span>
+<span class="n">Thickness</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">compute_thickness</span><span class="p">(</span><span class="n">seg</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;TRT&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="p">.</span><span class="n">scale_z</span><span class="p">);</span>
+<span class="n">Z</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">sectorize_peripapillar</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="w"> </span><span class="n">Y</span><span class="p">,</span><span class="w"> </span><span class="n">TRT</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;4_quadrant&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="qustom-number-of-quadrants-sectorization">
+<h4>Qustom number of quadrants sectorization<a class="headerlink" href="#qustom-number-of-quadrants-sectorization" title="Link to this heading">¶</a></h4>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">header</span><span class="p">,</span><span class="w"> </span><span class="n">seg</span><span class="p">,</span><span class="w"> </span><span class="o">~</span><span class="p">,</span><span class="w"> </span><span class="o">~</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">read_vol</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="s">&#39;verbose&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;get_coordinates&#39;</span><span class="p">);</span>
+<span class="n">Thickness</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">compute_thickness</span><span class="p">(</span><span class="n">seg</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;TRT&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="p">.</span><span class="n">scale_z</span><span class="p">);</span>
+<span class="n">Z</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">sectorize_peripapillar</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="w"> </span><span class="n">Y</span><span class="p">,</span><span class="w"> </span><span class="n">TRT</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;qustom&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="nb">pi</span><span class="o">/</span><span class="mi">8</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
+</dd></dl>
+
+</section>
+<hr class="docutils" />
+<section id="texture-analysis">
+<h2>Texture analysis<a class="headerlink" href="#texture-analysis" title="Link to this heading">¶</a></h2>
+<dl class="mat function">
+<dt class="sig sig-object mat" id="texture.fractal_dimension">
+<span class="sig-name descname"><span class="pre">fractal_dimension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">I</span></em>, <em class="sig-param"><span class="pre">method</span></em>, <em class="sig-param"><span class="pre">visu</span></em><span class="sig-paren">)</span><a class="headerlink" href="#texture.fractal_dimension" title="Link to this definition">¶</a></dt>
+<dd><p>Compute Fractal Dimension of a grayscale image</p>
+<section id="id96">
+<h3>Input arguments<a class="headerlink" href="#id96" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>I</strong>:           Input image as a 2D matrix. Color images are converted to gray scale values.</p></li>
+<li><p><strong>method</strong>:      String indicating the method to use for fractal dimension computation.</p>
+<ul>
+<li><p>‘DBC’ [1]</p></li>
+<li><p>‘IR_DBC’ (default) [2]</p></li>
+</ul>
+</li>
+<li><p><strong>visu</strong>:        If true a plot with the computed values is shown. Default = false</p></li>
+</ul>
+</section>
+<section id="id97">
+<h3>Output arguments<a class="headerlink" href="#id97" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>FD</strong>:          Fractal dimension.</p></li>
+</ul>
+</section>
+<section id="id98">
+<h3>Notes<a class="headerlink" href="#id98" title="Link to this heading">¶</a></h3>
+<p>This implementation does not incorporate a procedure to compute the
+fractal dimension of neither color nor binary images. The ‘DBC’ method 
+has several assumptions on image size so ‘IR_DBC’ method is prefered.</p>
+</section>
+<section id="id99">
+<h3>References<a class="headerlink" href="#id99" title="Link to this heading">¶</a></h3>
+<p>[1] Sarkar N. and Chaudhuri B. “An Efficient Differential Box-Counting 
+Approach to Compute Fractal Dimension of Image”, IEEE Transactions On 
+Systems, Man and Cybernetics, 1991</p>
+<p>[2] Long M. and Peng F. “A Box-Counting Method with Adaptable Box Height
+for Measuring the Fractal Feature of Images”, Radioengineering, 2013</p>
+</section>
+<section id="id100">
+<h3>Example<a class="headerlink" href="#id100" title="Link to this heading">¶</a></h3>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">I</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">imread</span><span class="p">(</span><span class="s">&#39;cameraman.tif&#39;</span><span class="p">);</span>
+<span class="n">FD</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">fractal_dimension</span><span class="p">(</span><span class="n">I</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="mat function">
+<dt class="sig sig-object mat" id="texture.GLCM_features">
+<span class="sig-name descname"><span class="pre">GLCM_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">GLCM</span></em>, <em class="sig-param"><span class="pre">varargin</span></em><span class="sig-paren">)</span><a class="headerlink" href="#texture.GLCM_features" title="Link to this definition">¶</a></dt>
+<dd><p>Compute multiple features from a GLCM matrix</p>
+<section id="id101">
+<h3>Input arguments (mandatory)<a class="headerlink" href="#id101" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>GLCM</strong>:         2D GLCM matrix obtained by graycomatrix()</p></li>
+</ul>
+</section>
+<section id="id102">
+<h3>Input arguments (optional)<a class="headerlink" href="#id102" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>features</strong>:     Cell array of strings with the features to be computed. By default the full set of features are computed.</p></li>
+</ul>
+</section>
+<section id="id103">
+<h3>Output arguments<a class="headerlink" href="#id103" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>X</strong>:            Structure with computed features.</p></li>
+</ul>
+</section>
+<section id="id104">
+<h3>Notes<a class="headerlink" href="#id104" title="Link to this heading">¶</a></h3>
+<p>Some features assume GLCM matrix to be symmetric</p>
+<p>The naming convention of some parameters is messy in the literature. The 
+following issues are important:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Homogeneity: equal to inverse difference and inverse difference moment.</p></li>
+<li><p>Dissimilarity: equal to the difference average</p></li>
+<li><p>Cluster tendency is equal to sum variance</p></li>
+<li><p>Intertia is equal to contrast</p></li>
+</ul>
+</div></blockquote>
+<p>Additional features not yet implemented: maximal correlation coefficient</p>
+</section>
+<section id="id105">
+<h3>References<a class="headerlink" href="#id105" title="Link to this heading">¶</a></h3>
+<p>[1] Haralick R. Shanmugam K. and Dinstein I. “Textural Features for Image
+Classification”, IEEE Transactions on Systems, Man and Cybernetics, 1973
+<a class="reference external" href="http://haralick.org/journals/TexturalFeaturesHaralickShanmugamDinstein.pdf#page10">http://haralick.org/journals/TexturalFeaturesHaralickShanmugamDinstein.pdf#page10</a></p>
+<p>[2] Soh L. “Texture Analysis of SAR Sea Ice Imagery Using Gray Level
+Co-Ocurrence Matrices”, IEEE Transations on Gegoscience and Remote Sensing,
+1999. <a class="reference external" href="https://doi.org/10.1109/36.752194">https://doi.org/10.1109/36.752194</a></p>
+<p>[3] Zwanenburg et al. The Image Biomarker Standardization Initiative: 
+Standardized Quantitative Radiomics for High-Throughput Image-based 
+Phenotyping, 2020, Radiology, 
+<a class="reference external" href="https://pubs.rsna.org/doi/full/10.1148/radiol.2020191145">https://pubs.rsna.org/doi/full/10.1148/radiol.2020191145</a>
+Implementation: <a class="reference external" href="https://pyradiomics.readthedocs.io/en/latest/features.html?highlight=imc#radiomics.glcm.RadiomicsGLCM.getImc1FeatureValue">https://pyradiomics.readthedocs.io/en/latest/features.html?highlight=imc#radiomics.glcm.RadiomicsGLCM.getImc1FeatureValue</a></p>
+</section>
+<section id="id106">
+<h3>Example<a class="headerlink" href="#id106" title="Link to this heading">¶</a></h3>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">I</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">imread</span><span class="p">(</span><span class="s">&#39;cameraman.tif&#39;</span><span class="p">);</span>
+<span class="n">M</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">graycomatrix</span><span class="p">(</span><span class="n">I</span><span class="p">,</span><span class="s">&#39;NumLevels&#39;</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="s">&#39;G&#39;</span><span class="p">,[])</span>
+<span class="n">X</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">GLCM_features</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="mat function">
+<dt class="sig sig-object mat" id="texture.lacunarity">
+<span class="sig-name descname"><span class="pre">lacunarity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">I</span></em>, <em class="sig-param"><span class="pre">method</span></em>, <em class="sig-param"><span class="pre">r</span></em>, <em class="sig-param"><span class="pre">visu</span></em><span class="sig-paren">)</span><a class="headerlink" href="#texture.lacunarity" title="Link to this definition">¶</a></dt>
+<dd><p>Compute lacunarity of a gray-scale/binary image</p>
+<p>Lacunarity is a measure of how an image covers the space. Images/masks
+with bigger gaps will show a higher lacunarity values. Instead of a 
+single value lacunarity is often computed for a set of scales defined by 
+the size of the box used to compute it. It is usually considered as a  
+complementary metric to fractal dimension.</p>
+<section id="id107">
+<h3>Input arguments<a class="headerlink" href="#id107" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>I</strong>:           Input grayscale/binary image.</p></li>
+<li><p><strong>method</strong>:      Method to compute lacunarity.</p>
+<ul>
+<li><p>‘window’: (default) fast and simple. See [2] Section 2.2.</p></li>
+<li><p>‘local_bin’: See [3] Section 3.1.</p></li>
+<li><p>‘box_3d’: Slow. See [3] Section 3.2.</p></li>
+</ul>
+</li>
+<li><p><strong>r</strong>:           1D array with window size values. By default 10 values from 1 to the minimum between rows and columns (min{M, N}) are used.</p></li>
+<li><p><strong>visu</strong>:        If true a plot with the computed values is shown. Default = false</p></li>
+</ul>
+</section>
+<section id="id108">
+<h3>Output arguments<a class="headerlink" href="#id108" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>L</strong>:             1D array with lacunarity values.</p></li>
+<li><p><strong>r</strong>              1D array with box size values.</p></li>
+</ul>
+</section>
+<section id="id109">
+<h3>Notes<a class="headerlink" href="#id109" title="Link to this heading">¶</a></h3>
+<p>Color images will be converted to grayscale. There are multiple 
+definitions of lacunarity, with different calculation methods. This 
+function covers 3 methods with different approaches. The scale of each
+method is not directly comparable.</p>
+<p>There is also a “normalized Lacunarity” proposed in [2] that may be
+interesting to implement in the future.</p>
+</section>
+<section id="id110">
+<h3>References<a class="headerlink" href="#id110" title="Link to this heading">¶</a></h3>
+<p>[1] Allain C. and Clitre M. “Charaterizing the lacunarity of random and
+deterministic fractal sets”, Physical Review, 1991.
+<a class="reference external" href="https://doi.org/10.1103/PhysRevA.44.3552">https://doi.org/10.1103/PhysRevA.44.3552</a></p>
+<p>[2] Roy A. and Perfect E. “Lacunarity Analyses of Multifractal and Natural
+Grayscale Patterns”, Fractals, 2014
+<a class="reference external" href="https://doi.org/10.1142/S0218348X14400039">https://doi.org/10.1142/S0218348X14400039</a></p>
+<p>[3] Backes A.R. “A new approach to estimate lacunarity of texture images”,
+Pattern Recognition Letters, 2013</p>
+</section>
+<section id="id111">
+<h3>Example<a class="headerlink" href="#id111" title="Link to this heading">¶</a></h3>
+<section id="compute-lacunarity">
+<h4>Compute lacunarity<a class="headerlink" href="#compute-lacunarity" title="Link to this heading">¶</a></h4>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">I</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">imread</span><span class="p">(</span><span class="s">&#39;cameraman.tif&#39;</span><span class="p">);</span>
+<span class="p">[</span><span class="n">L</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">lacunarity</span><span class="p">(</span><span class="n">I</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="compute-lacunarity-choosing-a-method-and-custom-r-values">
+<h4>Compute Lacunarity choosing a method and custom r values<a class="headerlink" href="#compute-lacunarity-choosing-a-method-and-custom-r-values" title="Link to this heading">¶</a></h4>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">I</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">imread</span><span class="p">(</span><span class="s">&#39;cameraman.tif&#39;</span><span class="p">);</span>
+<span class="n">r</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">2</span><span class="p">:</span><span class="mi">10</span><span class="p">;</span>
+<span class="p">[</span><span class="n">L</span><span class="p">,</span><span class="w"> </span><span class="o">~</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">lacunarity</span><span class="p">(</span><span class="n">I</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;local_bin&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
+</dd></dl>
+
+<hr class="docutils" />
+<dl class="mat function">
+<dt class="sig sig-object mat" id="texture.LBP_features">
+<span class="sig-name descname"><span class="pre">LBP_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">I</span></em>, <em class="sig-param"><span class="pre">n_neighbor</span></em>, <em class="sig-param"><span class="pre">features</span></em><span class="sig-paren">)</span><a class="headerlink" href="#texture.LBP_features" title="Link to this definition">¶</a></dt>
+<dd><p>Compute features using Local Binary Pattern</p>
+<section id="id112">
+<h3>Input arguments<a class="headerlink" href="#id112" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>I</strong>:           Input grayscale image to be analyzed.</p></li>
+<li><p><strong>n_neighbor</strong>:  Number of neighbors. Default is 8.</p></li>
+<li><p><strong>features</strong>:    String or a cell array of strings defining the nmerical features to be computed. By default all the features are returned. If ‘none’ then no features are computed and only the LBP histogram is returned.</p></li>
+</ul>
+</section>
+<section id="id113">
+<h3>Output arguments<a class="headerlink" href="#id113" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><strong>X</strong>:           Struct with features computed from LBP histogram.</p></li>
+<li><p><strong>H</strong>:           LBP histogram.</p></li>
+</ul>
+</section>
+<section id="id114">
+<h3>Example<a class="headerlink" href="#id114" title="Link to this heading">¶</a></h3>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">I</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">imread</span><span class="p">(</span><span class="s">&#39;cameraman.tif&#39;</span><span class="p">);</span>
+<span class="n">X</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">LBP_features</span><span class="p">(</span><span class="n">I</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="index.html">Table of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Home</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#file-reading">File reading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#visualization">Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reflectance">Reflectance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#structural-analysis">Structural analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#spatial-analysis">Spatial analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#texture-analysis">Texture analysis</a></li>
+</ul>
+</li>
+</ul>
+
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="tutorials.html" title="Tutorials"
+             >previous</a></li>
+        <li class="nav-item nav-item-0"><a href="index.html">RETIMAT 1.0.0</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Functions</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    </div>
+  </body>
+</html>

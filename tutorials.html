@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Tutorials &#8212; RETIMAT 1.0.0</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=def86cc0" />
+    
+    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Functions" href="functions.html" />
+    <link rel="prev" title="Home" href="index.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="functions.html" title="Functions"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="index.html" title="Home"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">RETIMAT 1.0.0</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Tutorials</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="tutorials">
+<h1>Tutorials<a class="headerlink" href="#tutorials" title="Link to this heading">¶</a></h1>
+<p id="tuto">This page contains two tutorials:</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#tutorial-read-oct"><span class="std std-ref">Read and explore OCT data</span></a>:</p></li>
+<li><p><a class="reference internal" href="#tutorial-feature-extraction"><span class="std std-ref">Feature extraction</span></a></p></li>
+</ol>
+<section id="read-and-explore-oct-data">
+<span id="tutorial-read-oct"></span><h2><strong>Read and explore OCT data</strong><a class="headerlink" href="#read-and-explore-oct-data" title="Link to this heading">¶</a></h2>
+<p>This tutorial shows how to:</p>
+<ul class="simple">
+<li><p>Load OCT files into MATLAB</p></li>
+<li><p>Visualize loaded data (fundus image, OCT slices, segmentation…)</p></li>
+<li><p>Generate a visual report</p></li>
+</ul>
+<p>The source code of this tutorial can be found in the <code class="docutils literal notranslate"><span class="pre">tutorials</span></code> folder or <a class="reference external" href="https://github.com/drombas/retimat/blob/main/tutorials/File_Reading_Visualization.mlx">here</a>.</p>
+<section id="understand-your-data">
+<h3>0. Understand your data<a class="headerlink" href="#understand-your-data" title="Link to this heading">¶</a></h3>
+<p>The first step is to understand your images in terms of:</p>
+<ul class="simple">
+<li><p><em>Device and file format</em>: there are many different devices and file formats and not all of them are equally easy to read and have the same information.</p></li>
+<li><p><em>Acquisition protocol</em>: OCT images are composed of one or more 2D images (aka slices or B-scans). It is crucial to know the area covered by these B-scans (macula, optic disk, wide), as well as their geometrical arrangement (horizontal, circular).</p></li>
+</ul>
+<p>Understanding the above will help troubleshoots problems.</p>
+<p>RETIMAT can only read <code class="docutils literal notranslate"><span class="pre">vol</span></code>, <code class="docutils literal notranslate"><span class="pre">e2e</span></code>, <code class="docutils literal notranslate"><span class="pre">fda</span></code>, <code class="docutils literal notranslate"><span class="pre">img</span></code> files. If your files are different, you can try the following Python packages:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="hhttps://github.com/marksgraham/OCT-Converter">OCT-Converter</a></p></li>
+<li><p><a class="reference external" href="https://github.com/MedVisBonn/eyepy">eyepy</a></p></li>
+</ul>
+</section>
+<section id="load-the-images">
+<h3>1. Load the images<a class="headerlink" href="#load-the-images" title="Link to this heading">¶</a></h3>
+<p>Images are loaded into MATLAB by means of dedicated read functions.</p>
+<p>For instance, a Heidelberg <code class="docutils literal notranslate"><span class="pre">vol</span></code> file can be read as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">header</span><span class="p">,</span> <span class="n">seg</span><span class="p">,</span> <span class="n">bscan</span><span class="p">,</span> <span class="n">fundus</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_vol</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This function returns four arguments:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">header</span></code>: struct with metadata (image sdimensions, lateraliry, …)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">seg</span></code>: struct with retinal layer segmentation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bscan</span></code>: a 3D image with B-scans</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fundus</span></code>: a 2D image with a fundus image</p></li>
+</ul>
+<p>Other file formats can be read similarly:</p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">header</span><span class="p">,</span><span class="w"> </span><span class="n">seg</span><span class="p">,</span><span class="w"> </span><span class="n">bscan</span><span class="p">,</span><span class="w"> </span><span class="n">fundus</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">read_e2e</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A single <code class="docutils literal notranslate"><span class="pre">E2E</span></code> file can contain more than one OCT volumes (usually two: one per eye).
+For this reason, the returned objects are cell lists each related to a single OCT volume.</p>
+<p>Topcon <code class="docutils literal notranslate"><span class="pre">fda</span></code> files contain metadata, OCT, segmentation and a color fundus image. To read them:</p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">header</span><span class="p">,</span><span class="w"> </span><span class="n">seg</span><span class="p">,</span><span class="w"> </span><span class="n">bscan</span><span class="p">,</span><span class="w"> </span><span class="n">fundus</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">read_fda</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Cirrus <code class="docutils literal notranslate"><span class="pre">img</span></code> files only contain 1 OCT volume and no segmentation or metadata.
+The <code class="docutils literal notranslate"><span class="pre">read_img</span></code> function reads the B-scans and tries to infer the metadata from image size and file name.</p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">header</span><span class="p">,</span><span class="w"> </span><span class="n">bscan</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">read_img</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The fundus image acquired along with the img is stored in a separated <code class="docutils literal notranslate"><span class="pre">bin</span></code> file that can be read by:</p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">fundus</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">read_bin</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="explore-metadata">
+<h3>2. Explore metadata<a class="headerlink" href="#explore-metadata" title="Link to this heading">¶</a></h3>
+<p>After reading a file, it is a good idea to look into the metadata stored in the header to check that everything looks good.</p>
+<p>We can do that with the following command:</p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="nb">disp</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Header structure is an attempt at harmonizing data from different scanners.</p>
+<p>Fields should be equivalent across scanners. However, due to the difficulty of fully reading propietary file formats, not all the fields will be present for every format.</p>
+<p>We can also check which segmented layer boundaries are present in the file:</p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">boundaries</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">fields</span><span class="p">(</span><span class="n">seg</span><span class="p">);</span>
+<span class="nb">disp</span><span class="p">(</span><span class="n">boundaries</span><span class="o">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="visualize-the-images">
+<h3>3. Visualize the images<a class="headerlink" href="#visualize-the-images" title="Link to this heading">¶</a></h3>
+<p>Quality assurance is a key step in any image analysis pipeline. In OCT, poor contrast, artifacts, and segmentation errors are not uncommon.
+Therefore, it is crucial to inspect the data to detect those problems.</p>
+<p>Here we plot the middle B-scan with its segmentation:</p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">figure</span><span class="p">;</span>
+<span class="n">idx_bscan</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">13</span><span class="p">;</span>
+<span class="nb">imshow</span><span class="p">(</span><span class="n">bscan</span><span class="p">(:,:,</span><span class="n">idx_bscan</span><span class="p">));</span><span class="w"> </span><span class="n">hold</span><span class="w"> </span><span class="s">on</span><span class="p">;</span>
+<span class="k">for</span><span class="w"> </span><span class="nb">j</span><span class="p">=</span><span class="mi">1</span><span class="p">:</span><span class="nb">length</span><span class="p">(</span><span class="n">boundaries</span><span class="p">)</span>
+<span class="w">    </span><span class="nb">plot</span><span class="p">(</span><span class="n">seg</span><span class="p">.(</span><span class="n">boundaries</span><span class="p">{</span><span class="nb">j</span><span class="p">})(</span><span class="n">idx_bscan</span><span class="p">,</span><span class="w"> </span><span class="p">:))</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/bscan.png"><img alt="_images/bscan.png" class="align-center" src="_images/bscan.png" style="width: 400px; height: 370px;" /></a>
+<p>Often a fundus image is acquired alongside the OCT volume. Depending on the scanner this image is different:</p>
+<ul class="simple">
+<li><p>Heidelberg: a graysacle image stored in <code class="docutils literal notranslate"><span class="pre">vol</span></code>, <code class="docutils literal notranslate"><span class="pre">e2e</span></code> files.</p></li>
+<li><p>Cirrus: a grayscale image stored in a separated <code class="docutils literal notranslate"><span class="pre">bin</span></code> file</p></li>
+<li><p>Topcon: an RGB color image stored inside <code class="docutils literal notranslate"><span class="pre">fda</span></code> files.</p></li>
+</ul>
+<p>To visualize the fundus image we can just:</p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">figure</span><span class="p">;</span>
+<span class="nb">imagesc</span><span class="p">(</span><span class="n">fundus</span><span class="p">);</span><span class="w"> </span><span class="nb">colormap</span><span class="p">(</span><span class="nb">gray</span><span class="p">);</span><span class="w"> </span><span class="nb">axis</span><span class="p">(</span><span class="s">&quot;off&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/fundus.png"><img alt="_images/fundus.png" class="align-center" src="_images/fundus.png" style="width: 400px; height: 400px;" /></a>
+</section>
+<section id="generate-a-report">
+<h3>4. Generate a report<a class="headerlink" href="#generate-a-report" title="Link to this heading">¶</a></h3>
+<p>Doing all the previous steps separately is not always convenient.</p>
+<p>To simplify data inspection, we can automatically create a summary report using the <code class="docutils literal notranslate"><span class="pre">generate_report()</span></code> function.
+The function allows us to pass fundus,bscan and segmentation data and builds a tiled plot that can be stored in memory.</p>
+<p>A full report includes:</p>
+<ul class="simple">
+<li><p><em>Fundus image</em></p></li>
+<li><p><em>Reflectance map</em>: a 2D map obtained by averaging A-scan intensities in depth. Useful to detect noisy B-scans and shades.</p></li>
+<li><p><em>Thickness maps</em>: 2D maps generated by computing layer thicknesses from segmentation data. Useful to detect segmentation errors or lessions.</p></li>
+<li><p><em>B-scans</em>: several slices with overlapping segmentation.</p></li>
+</ul>
+<p>As an example, let’s generate a full report for the loaded image.</p>
+<p>As arguments we need to provide image data and the layers for which we want to plot thickness maps</p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">layers</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">{</span><span class="s">&#39;TRT&#39;</span><span class="p">,</span><span class="s">&#39;RNFL&#39;</span><span class="p">,</span><span class="s">&#39;GCIPL&#39;</span><span class="p">};</span>
+<span class="n">generate_report</span><span class="p">(</span><span class="n">bscan</span><span class="p">,</span><span class="w"> </span><span class="n">seg</span><span class="p">,</span><span class="w"> </span><span class="n">fundus</span><span class="p">,</span><span class="w"> </span><span class="n">layers</span><span class="p">);</span>
+</pre></div>
+</div>
+<img alt="_images/report.png" class="align-center" src="_images/report.png" />
+<p>Finally, to store it as a <code class="docutils literal notranslate"><span class="pre">png</span></code> withoug opening a window:</p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">generate_report</span><span class="p">(</span><span class="n">bscan</span><span class="p">,</span><span class="w"> </span><span class="n">seg</span><span class="p">,</span><span class="w"> </span><span class="n">fundus</span><span class="p">,</span><span class="w"> </span><span class="n">layers</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;file_name&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;report.png&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;visible&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;off&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="feature-extraction">
+<h2><strong>Feature extraction</strong><a class="headerlink" href="#feature-extraction" title="Link to this heading">¶</a></h2>
+<p id="tutorial-feature-extraction">This tutorial shows how to build a feature extraction pipeline step by step</p>
+<section id="preliminaries">
+<h3>0. Preliminaries<a class="headerlink" href="#preliminaries" title="Link to this heading">¶</a></h3>
+<p>The computation of retinal features requires the segmentation or retinal layer boundaries.</p>
+<p>Here, there are two possiblities:</p>
+<ul class="simple">
+<li><p>The images were already segmented and the segmentation is stored in vol, e2e, or fda files</p></li>
+<li><p>We have raw images without segmentation</p></li>
+</ul>
+<p>We can check that by reading the images and trying to visualize the segmentation as in the previous tutorial.</p>
+<p>In the segmentation is not available, we recommend using <a class="reference external" href="https://iibi.uiowa.edu/oct-reference">OCT Explorer</a> software to do so. OCT Explorer allows you to load your images and save the segmentation as an <code class="docutils literal notranslate"><span class="pre">xml</span></code> file that can be read by RETIMAT.</p>
+<p>After segmentation, we need to decide which features we want to compute. There are four categories of features:</p>
+<ul class="simple">
+<li><p><em>Thickness</em>: average thickness values over predefined macular sectors.</p></li>
+<li><p><em>Foveal pit morphology</em>: geometrical features of the foveal pit morphology (slope, radius, …).</p></li>
+<li><p><em>Reflectance</em>: features related with image intensity.</p></li>
+<li><p><em>Texture analysis</em>: features that measure statistical properties of the thickness surface.</p></li>
+</ul>
+<p>Each feature type requires a different set of processing steps. In the next steps basic thickness feature extraction is described. The source code of is <a class="reference external" href="https://github.com/drombas/retimat/blob/main/tutorials/Thickness_Analysis.mlx">available</a>. If you want to extract non-thickness features please check the other <a class="reference external" href="https://github.com/drombas/retimat/blob/main/tutorials">tutorials</a>.</p>
+</section>
+<section id="load-the-files">
+<h3>1. Load the files<a class="headerlink" href="#load-the-files" title="Link to this heading">¶</a></h3>
+<p>This step parses the information inside the file and computes the <code class="docutils literal notranslate"><span class="pre">X</span></code>, <code class="docutils literal notranslate"><span class="pre">Y</span></code> coordinates of each A-scan.</p>
+<p>To analyse retinal thickness we only need the header and the segmentation data.</p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">header</span><span class="p">,</span><span class="w"> </span><span class="n">seg</span><span class="p">,</span><span class="w"> </span><span class="o">~</span><span class="p">,</span><span class="w"> </span><span class="o">~</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">read_vol</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;get_coordinates&#39;</span><span class="p">);</span>
+
+<span class="n">X</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">header</span><span class="p">.</span><span class="n">X_oct</span><span class="p">;</span>
+<span class="n">Y</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">header</span><span class="p">.</span><span class="n">Y_oct</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="preprocessing">
+<h3>2. Preprocessing<a class="headerlink" href="#preprocessing" title="Link to this heading">¶</a></h3>
+<p>We can now compute thicknesses as the difference between segmented boundaries.</p>
+<p>We need to specify the layers to analyse as input.</p>
+<p>Thickness values are by defaul in pixels, but can be computed in micrometers if we pass the axial resolution (<code class="docutils literal notranslate"><span class="pre">scale_z</span></code>) to the function.
+The output are stored in the struct Thickness with a field for every layer.</p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">layers</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">{</span><span class="s">&#39;TRT&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;GCIPL&#39;</span><span class="p">};</span>
+<span class="n">Thickness</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">compute_thickness</span><span class="p">(</span><span class="n">seg</span><span class="p">,</span><span class="w"> </span><span class="n">layers</span><span class="p">,</span><span class="w"> </span><span class="n">header</span><span class="p">.</span><span class="n">scale_z</span><span class="p">);</span>
+
+<span class="n">TRT</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Thickness</span><span class="p">.</span><span class="n">TRT</span><span class="p">;</span>
+<span class="n">GCIPL</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Thickness</span><span class="p">.</span><span class="n">GCIPL</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>To compute averaged sector thicknesses it is convenient to have regular spatial sampling (i.e., same sampling distribution across the macula).
+To achieve that we can transform our original A-Scan coordinates to a regular grid by using interpolation.</p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">X_new</span><span class="p">,</span><span class="w"> </span><span class="n">Y_new</span><span class="p">,</span><span class="w"> </span><span class="n">TRT_new</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">resample_map</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="w"> </span><span class="n">Y</span><span class="p">,</span><span class="w"> </span><span class="n">TRT</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;regular&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;max_d&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;n_point&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">);</span>
+<span class="p">[</span><span class="n">X_new</span><span class="p">,</span><span class="w"> </span><span class="n">Y_new</span><span class="p">,</span><span class="w"> </span><span class="n">GCIPL_new</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">resample_map</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="w"> </span><span class="n">Y</span><span class="p">,</span><span class="w"> </span><span class="n">GCIPL</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;regular&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;max_d&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;n_point&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="foveal-location">
+<h3>3. Foveal location<a class="headerlink" href="#foveal-location" title="Link to this heading">¶</a></h3>
+<p>Often, acquired images may not be correctly centered at the foveal pit (due to fixation errors).
+This can result in erroneous measurement and must be corrected. To do this we need to:</p>
+<ol class="arabic simple">
+<li><p>Locate the actual foveal center automatically</p></li>
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">X</span></code>, <code class="docutils literal notranslate"><span class="pre">Y</span></code> coordinate origin to the foveal center</p></li>
+</ol>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">x_fovea</span><span class="p">,</span><span class="w"> </span><span class="n">y_fovea</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">find_fovea</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="w"> </span><span class="n">Y</span><span class="p">,</span><span class="w"> </span><span class="n">TRT</span><span class="p">);</span>
+
+<span class="n">X</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">x_fovea</span><span class="p">;</span>
+<span class="n">Y</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Y</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">y_fovea</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="sectorize-thickness">
+<h3>4. Sectorize thickness<a class="headerlink" href="#sectorize-thickness" title="Link to this heading">¶</a></h3>
+<p>Often we are interested in average measures of the thickness maps of above.</p>
+<p>For instance, to compute ETDRS sectorized we just need to:</p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">TRT_etdrs</span><span class="p">,</span><span class="w"> </span><span class="n">Sect_etdrs</span><span class="p">]</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="n">sectorize_map</span><span class="p">(</span><span class="n">X_new</span><span class="p">,</span><span class="w"> </span><span class="n">Y_new</span><span class="p">,</span><span class="w"> </span><span class="n">TRT_new</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;mean&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;etdrs&#39;</span><span class="p">);</span>
+<span class="p">[</span><span class="n">GCIPL_etdrs</span><span class="p">,</span><span class="w"> </span><span class="n">Sect_etdrs</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">sectorize_map</span><span class="p">(</span><span class="n">X_new</span><span class="p">,</span><span class="w"> </span><span class="n">Y_new</span><span class="p">,</span><span class="w"> </span><span class="n">GCIPL_new</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;mean&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;etdrs&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>This returns the averaged numeric values: <code class="docutils literal notranslate"><span class="pre">TRT_etdrs</span></code> and a <code class="docutils literal notranslate"><span class="pre">Sect_etdrs</span></code> struct.
+ETDRS sectors are: central, inner nasal, inner superior, inner  temporal, inner inferior, outer nasal, outer superior, outer temporal and outer inferior</p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">etdrs_vars</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">{</span><span class="s">&#39;C&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;IN&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;IS&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;IT&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;II&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;ON&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;OS&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;OT&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;OI&#39;</span><span class="p">};</span>
+<span class="n">T</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">cell2table</span><span class="p">([</span><span class="n">layers</span><span class="o">&#39;</span><span class="w"> </span><span class="nb">num2cell</span><span class="p">([</span><span class="n">TRT_etdrs</span><span class="p">;</span><span class="w"> </span><span class="n">GCIPL_etdrs</span><span class="p">])],</span><span class="w"> </span><span class="s">&#39;VariableNames&#39;</span><span class="p">,[{</span><span class="s">&#39;layer&#39;</span><span class="p">},</span><span class="w"> </span><span class="n">etdrs_vars</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>We can also use more advanced sectorizations</p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">Sectors</span><span class="p">.</span><span class="n">type</span><span class="w">    </span><span class="p">=</span><span class="w"> </span><span class="s">&#39;wedge&#39;</span><span class="p">;</span>
+<span class="n">Sectors</span><span class="p">.</span><span class="n">radius</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="nb">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">);</span>
+<span class="n">Sectors</span><span class="p">.</span><span class="n">theta_0</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">Sectors</span><span class="p">.</span><span class="n">n_angle</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">20</span><span class="p">;</span>
+<span class="n">Sectors</span><span class="p">.</span><span class="n">n_sect</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="n">Sectors</span><span class="p">.</span><span class="n">n_angle</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="nb">length</span><span class="p">(</span><span class="n">Sectors</span><span class="p">.</span><span class="n">radius</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+
+<span class="p">[</span><span class="n">TRT_wedge</span><span class="p">,</span><span class="w"> </span><span class="n">Sect_wedge</span><span class="p">]</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="n">sectorize_map</span><span class="p">(</span><span class="n">X_new</span><span class="p">,</span><span class="w"> </span><span class="n">Y_new</span><span class="p">,</span><span class="w"> </span><span class="n">TRT_new</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;mean&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">Sectors</span><span class="p">);</span>
+<span class="p">[</span><span class="n">GCIPL_etdrs</span><span class="p">,</span><span class="w"> </span><span class="n">Sect_wedge</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">sectorize_map</span><span class="p">(</span><span class="n">X_new</span><span class="p">,</span><span class="w"> </span><span class="n">Y_new</span><span class="p">,</span><span class="w"> </span><span class="n">GCIPL_new</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;mean&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">Sectors</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="visualize-results">
+<h3>5. Visualize results<a class="headerlink" href="#visualize-results" title="Link to this heading">¶</a></h3>
+<p>We can visualize custom sectorizations by using plot_sectors()</p>
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">figure</span><span class="p">(</span><span class="s">&#39;Position&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">1200</span><span class="w"> </span><span class="mi">400</span><span class="p">]);</span>
+
+<span class="nb">subplot</span><span class="p">(</span><span class="mi">131</span><span class="p">);</span>
+<span class="nb">surf</span><span class="p">(</span><span class="n">X_new</span><span class="p">,</span><span class="w"> </span><span class="n">Y_new</span><span class="p">,</span><span class="w"> </span><span class="n">TRT_new</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;EdgeColor&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;none&#39;</span><span class="p">);</span><span class="w"> </span><span class="nb">view</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">90</span><span class="p">);</span>
+<span class="n">axis</span><span class="w"> </span><span class="s">equal</span><span class="p">;</span>
+<span class="nb">title</span><span class="p">(</span><span class="s">&#39;Thickness map&#39;</span><span class="p">)</span>
+
+<span class="nb">subplot</span><span class="p">(</span><span class="mi">132</span><span class="p">);</span>
+<span class="n">plot_sectors</span><span class="p">(</span><span class="n">TRT_etdrs</span><span class="p">,</span><span class="w"> </span><span class="n">Sect_etdrs</span><span class="p">);</span><span class="w"> </span><span class="nb">title</span><span class="p">(</span><span class="s">&#39;ETDRS&#39;</span><span class="p">);</span>
+
+<span class="nb">subplot</span><span class="p">(</span><span class="mi">133</span><span class="p">);</span>
+<span class="n">plot_sectors</span><span class="p">(</span><span class="n">TRT_wedge</span><span class="p">,</span><span class="w"> </span><span class="n">Sect_wedge</span><span class="p">);</span><span class="w"> </span><span class="nb">title</span><span class="p">(</span><span class="s">&#39;Wedge&#39;</span><span class="p">);</span>
+
+<span class="nb">colormap</span><span class="p">(</span><span class="s">&quot;jet&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/thickness.png" class="align-center" src="_images/thickness.png" />
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="index.html">Table of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Home</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#read-and-explore-oct-data"><strong>Read and explore OCT data</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#feature-extraction"><strong>Feature extraction</strong></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+</ul>
+
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="functions.html" title="Functions"
+             >next</a></li>
+        <li class="right" >
+          <a href="index.html" title="Home"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">RETIMAT 1.0.0</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Tutorials</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    </div>
+  </body>
+</html>
